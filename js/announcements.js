@@ -349,8 +349,9 @@ class AnnouncementsEngine {
         : "";
 
       const imageHtml = item.imageUrl
-        ? `<div style="margin-top: 14px; border-radius: 8px; overflow: hidden; max-height: 320px; cursor: pointer;" class="notice-image-trigger" data-img="${item.imageUrl}">
-             <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+        ? `<div class="notice-image-trigger" data-img="${item.imageUrl}" title="Click to view full image in high resolution">
+             <img src="${item.imageUrl}" alt="${item.title}" loading="lazy" />
+             <span class="notice-expand-badge"><i class="fa-solid fa-magnifying-glass-plus"></i> View Full Image</span>
            </div>`
         : "";
 

@@ -18,13 +18,21 @@
   <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
 
   
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/instagram-gallery.css" />
 
   <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+    body, button, input, select, textarea, p, h1, h2, h3, h4, span, a {
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
     /* Announcements Specialized Layout */
     .announcements-ops-header {
       display: flex;
@@ -127,27 +135,75 @@
       white-space: pre-line;
     }
 
-    .notice-image-frame {
-      border-radius: 8px;
+    /* Uncropped Full Image Display with Zoom Hint */
+    .notice-image-frame,
+    .notice-image-trigger {
+      border-radius: 12px;
       overflow: hidden;
-      margin-bottom: 20px;
-      max-height: 440px;
-      border: 1px solid var(--color-sand-border);
-      background: var(--color-sand-bg);
-      cursor: pointer;
+      margin: 16px 0 20px 0;
+      max-height: 480px;
+      border: 1px solid var(--color-sand-border, #D8D1C5);
+      background: #F4EFE6;
+      cursor: zoom-in;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .notice-image-frame img {
-      width: 100%;
-      height: 100%;
-      max-height: 440px;
-      object-fit: cover;
+    .notice-image-frame:hover,
+    .notice-image-trigger:hover {
+      border-color: var(--color-forest, #123625);
+      box-shadow: 0 8px 24px rgba(18, 54, 37, 0.09);
+    }
+
+    .notice-image-frame img,
+    .notice-image-trigger img {
+      max-width: 100%;
+      max-height: 480px;
+      width: auto;
+      height: auto;
+      object-fit: contain; /* NEVER CROP: Shows 100% of the entire photo */
       display: block;
-      transition: transform var(--transition-normal);
+      margin: 0 auto;
+      border-radius: 8px;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .notice-image-frame:hover img {
-      transform: scale(1.01);
+    .notice-image-frame:hover img,
+    .notice-image-trigger:hover img {
+      transform: scale(1.015);
+    }
+
+    .notice-expand-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(18, 54, 37, 0.88);
+      color: #FFFFFF;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      pointer-events: none;
+      transition: transform 0.2s ease, background 0.2s ease;
+      z-index: 2;
+    }
+
+    .notice-image-frame:hover .notice-expand-badge,
+    .notice-image-trigger:hover .notice-expand-badge {
+      background: #123625;
+      transform: translateY(-2px);
     }
 
     .notice-footer-meta {
@@ -381,13 +437,11 @@
 
   <!-- Image Lightbox Modal for Notice Images -->
   <div class="modal-backdrop" id="noticeImageLightbox">
-    <div style="max-width: 800px; width: 100%; background: #000; border-radius: 8px; overflow: hidden; position: relative;">
-      <button id="closeNoticeLightboxBtn" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer; z-index: 10;">
+    <div style="max-width: 980px; width: 92%; max-height: 90vh; background: #0E2419; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 25px 70px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; padding: 18px;">
+      <button id="closeNoticeLightboxBtn" aria-label="Close" style="position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 38px; height: 38px; font-size: 1.3rem; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">
         &times;
       </button>
-      <img id="noticeLightboxImg" src="" alt="Full view" style="width: 100%; max-height: 80vh; object-fit: contain; display: block;" />
-    </div>
-  </div>
+      <img id="noticeLightboxImg" src="" alt="Full view" style="max-width: 100%; max-height: 82vh; object-fit: contain; display: block; margin: 0 auto; border-radius: 8px;" />
     </div>
   </div>
 
@@ -461,7 +515,7 @@
   <script src="js/supabase-client.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/admin-settings.js"></script>
-  <script src="js/announcements.js"></script>
+  <script src="js/announcements.js?v=2.0"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
