@@ -79,7 +79,11 @@ class SupabaseHybridClient {
   async signIn(email, password = '') {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Live Supabase Database Whitelist Check
+    if (!password) {
+      return { success: false, error: 'Please enter your password.' };
+    }
+
+    // 1. Live Supabase Database Whitelist & Password Check
     if (this.isLive()) {
       try {
         const { data: staffMember, error: staffErr } = await this.client
@@ -93,6 +97,14 @@ class SupabaseHybridClient {
         }
 
         if (staffMember) {
+          // If staffMember has a password column set in DB, verify it!
+          if (staffMember.password && staffMember.password !== password) {
+            return {
+              success: false,
+              error: 'Authentication Failed: Incorrect password. Please check your password and try again.'
+            };
+          }
+
           const user = {
             id: staffMember.id || ('usr_' + Date.now()),
             email: staffMember.email,
@@ -115,11 +127,17 @@ class SupabaseHybridClient {
       }
     }
 
-    // 2. Local Fallback Whitelist Check (Only allow pre-authorized team members)
+    // 2. Local Fallback Whitelist & Password Check
     const allowedUsers = (window.authRBAC && window.authRBAC.users) ? window.authRBAC.users : [];
     const matched = allowedUsers.find(u => u.email.toLowerCase() === cleanEmail);
 
     if (matched) {
+      if (matched.password && matched.password !== password) {
+        return {
+          success: false,
+          error: 'Authentication Failed: Incorrect password. Please check your password and try again.'
+        };
+      }
       this.saveLocalSession(matched);
       return { success: true, user: matched };
     }

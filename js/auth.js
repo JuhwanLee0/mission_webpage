@@ -10,6 +10,7 @@ const DEFAULT_AUTH_USERS = [
     email: "john0823.lee@gmail.com",
     name: "Juhwan Lee",
     role: "admin", // 'admin' | 'staff'
+    password: "TreeOfLife2026!",
     avatar: "",
     grantedAt: "2026-09-04"
   }
@@ -97,7 +98,12 @@ class AuthRBACEngine {
   async login(email, password = '') {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Supabase Hybrid Client Check (Queries Supabase staff_users whitelist)
+    if (!password) {
+      alert("Please enter your password.");
+      return false;
+    }
+
+    // 1. Supabase Hybrid Client Check (Queries Supabase staff_users whitelist & password)
     if (window.supabaseClient) {
       const result = await window.supabaseClient.signIn(cleanEmail, password);
       if (result && result.success) {
@@ -109,7 +115,6 @@ class AuthRBACEngine {
         location.reload();
         return true;
       } else if (result && result.error) {
-        // Explicit rejection
         alert(result.error);
         return false;
       }
@@ -118,6 +123,10 @@ class AuthRBACEngine {
     // 2. Preset Authorized Users Fallback
     const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
     if (existing) {
+      if (existing.password && existing.password !== password) {
+        alert("Authentication Failed: Incorrect password. Please try again.");
+        return false;
+      }
       this.saveSession(existing);
       this.closeLoginModal();
       alert(`Welcome back, ${existing.name}!\n\n(${existing.role.toUpperCase()} Role active)`);
@@ -147,18 +156,21 @@ class AuthRBACEngine {
     return this.currentUser && this.currentUser.role === 'admin';
   }
 
-  async grantPermission(email, name, role = 'staff') {
+  async grantPermission(email, name, role = 'staff', password = 'TreeOfLife2026!') {
     const cleanEmail = email.toLowerCase().trim();
+    const userPassword = password || 'TreeOfLife2026!';
     const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
     if (existing) {
       existing.role = role;
       if (name) existing.name = name;
+      if (password) existing.password = userPassword;
     } else {
       this.users.push({
         id: "usr_" + Date.now(),
         email: cleanEmail,
         name: name || cleanEmail.split('@')[0],
         role: role,
+        password: userPassword,
         avatar: "",
         grantedAt: new Date().toISOString().split('T')[0]
       });
@@ -173,7 +185,8 @@ class AuthRBACEngine {
           id: 'usr_' + Date.now(),
           email: cleanEmail,
           name: name || cleanEmail.split('@')[0],
-          role: role
+          role: role,
+          password: userPassword
         }, { onConflict: 'email' });
         console.log('[Supabase] Whitelist updated in cloud DB:', cleanEmail);
       } catch (err) {
@@ -302,9 +315,13 @@ class AuthRBACEngine {
             <form id="staffLoginForm">
               <div class="form-group">
                 <label class="form-label" for="staffLoginEmail">Staff Email Address</label>
-                <input type="email" id="staffLoginEmail" class="form-input" placeholder="admin@treeoflifemissions.org" required />
+                <input type="email" id="staffLoginEmail" class="form-input" placeholder="john0823.lee@gmail.com" required />
               </div>
-              <button type="submit" class="btn btn-forest" style="width: 100%; padding: 12px; margin-top: 8px;">
+              <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label" for="staffLoginPassword">Password</label>
+                <input type="password" id="staffLoginPassword" class="form-input" placeholder="Enter password" required />
+              </div>
+              <button type="submit" class="btn btn-forest" style="width: 100%; padding: 12px; margin-top: 16px;">
                 <i class="fa-solid fa-right-to-bracket"></i> Sign In
               </button>
             </form>
@@ -337,7 +354,7 @@ class AuthRBACEngine {
               <div style="font-weight: 750; font-size: 0.88rem; color: var(--color-forest); margin-bottom: 12px;">
                 <i class="fa-solid fa-user-plus"></i> Grant Staff Permission
               </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
                 <div>
                   <label class="form-label" style="font-size: 0.74rem;">Name</label>
                   <input type="text" id="grantName" class="form-input" placeholder="Sarah Chen" required style="padding: 8px 10px; font-size: 0.85rem;" />
@@ -345,6 +362,10 @@ class AuthRBACEngine {
                 <div>
                   <label class="form-label" style="font-size: 0.74rem;">Email</label>
                   <input type="email" id="grantEmail" class="form-input" placeholder="sarah@tamu.edu" required style="padding: 8px 10px; font-size: 0.85rem;" />
+                </div>
+                <div>
+                  <label class="form-label" style="font-size: 0.74rem;">Password</label>
+                  <input type="password" id="grantPassword" class="form-input" placeholder="Initial Pass" required style="padding: 8px 10px; font-size: 0.85rem;" />
                 </div>
                 <div>
                   <label class="form-label" style="font-size: 0.74rem;">Role</label>
@@ -391,7 +412,8 @@ class AuthRBACEngine {
         const email = document.getElementById('grantEmail').value;
         const name = document.getElementById('grantName').value;
         const role = document.getElementById('grantRole').value;
-        this.grantPermission(email, name, role);
+        const password = document.getElementById('grantPassword') ? document.getElementById('grantPassword').value : 'TreeOfLife2026!';
+        this.grantPermission(email, name, role, password);
         grantForm.reset();
         alert(`Granted ${role.toUpperCase()} permissions to ${email}`);
       });
@@ -405,7 +427,8 @@ class AuthRBACEngine {
       loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('staffLoginEmail').value;
-        this.login(email);
+        const password = document.getElementById('staffLoginPassword') ? document.getElementById('staffLoginPassword').value : '';
+        this.login(email, password);
       });
     }
   }

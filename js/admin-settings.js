@@ -371,6 +371,7 @@ class AdminSettingsEngine {
             <form id="adminGrantForm" style="display: flex; gap: 8px; margin-bottom: 14px;" onsubmit="window.adminSettings.handleGrantUser(event)">
               <input type="email" id="grantUserEmail" class="form-input" placeholder="leader@tamu.edu" required style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
               <input type="text" id="grantUserName" class="form-input" placeholder="Sarah Chen" style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
+              <input type="password" id="grantUserPassword" class="form-input" placeholder="Password" required style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
               <select id="grantUserRole" class="form-input" style="flex: 1; padding: 8px 10px; font-size: 0.82rem;">
                 <option value="staff">Staff</option>
                 <option value="admin">Admin</option>
@@ -784,15 +785,17 @@ class AdminSettingsEngine {
     e.preventDefault();
     const email = document.getElementById('grantUserEmail').value.trim();
     const name = document.getElementById('grantUserName').value.trim();
+    const password = document.getElementById('grantUserPassword') ? document.getElementById('grantUserPassword').value.trim() : 'TreeOfLife2026!';
     const role = document.getElementById('grantUserRole').value;
 
     if (!email) return;
 
-    window.authRBAC.grantPermission(email, name, role);
+    window.authRBAC.grantPermission(email, name, role, password);
     document.getElementById('grantUserEmail').value = '';
     document.getElementById('grantUserName').value = '';
+    if (document.getElementById('grantUserPassword')) document.getElementById('grantUserPassword').value = '';
     this.renderUsersTab();
-    alert(`Permission granted to ${name || email} as ${role.toUpperCase()}!`);
+    alert(`Permission granted to ${name || email} as ${role.toUpperCase()} (Password configured)!`);
   }
 
   /* ==========================================================================
