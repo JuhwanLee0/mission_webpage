@@ -6,44 +6,12 @@
 
 const DEFAULT_AUTH_USERS = [
   {
-    id: "usr_admin_01",
-    email: "admin@treeoflifemissions.org",
-    name: "Director Mike",
-    role: "admin", // 'admin' | 'staff' | 'viewer'
-    avatar: "https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/07c05852-7830-4420-bdd9-f5a99bff0c18/AK6A8946.JPG",
-    grantedAt: "2026-08-01"
-  },
-  {
-    id: "usr_admin_02",
-    email: "fayez@treeoflifemissions.org",
-    name: "Fayez Farag",
-    role: "admin",
-    avatar: "https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/07c05852-7830-4420-bdd9-f5a99bff0c18/AK6A8946.JPG",
-    grantedAt: "2026-08-01"
-  },
-  {
-    id: "usr_staff_01",
-    email: "media@treeoflifemissions.org",
-    name: "Media Staff",
-    role: "staff",
+    id: "usr_admin_primary",
+    email: "john0823.lee@gmail.com",
+    name: "Juhwan Lee",
+    role: "admin", // 'admin' | 'staff'
     avatar: "",
-    grantedAt: "2026-08-10"
-  },
-  {
-    id: "usr_staff_02",
-    email: "isis@treeoflifemissions.org",
-    name: "Isis Hanna",
-    role: "staff",
-    avatar: "",
-    grantedAt: "2026-08-12"
-  },
-  {
-    id: "usr_leader_01",
-    email: "sarah.chen@tamu.edu",
-    name: "Sarah Chen (TAMU Leader)",
-    role: "staff",
-    avatar: "",
-    grantedAt: "2026-08-15"
+    grantedAt: "2026-09-04"
   }
 ];
 
@@ -84,10 +52,26 @@ class AuthRBACEngine {
   }
 
   loadUsers() {
+    const demoEmails = [
+      'admin@treeoflifemissions.org',
+      'fayez@treeoflifemissions.org',
+      'media@treeoflifemissions.org',
+      'isis@treeoflifemissions.org',
+      'sarah.chen@tamu.edu'
+    ];
     const saved = localStorage.getItem(this.usersKey);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          let filtered = parsed.filter(u => u && u.email && !demoEmails.includes(u.email.toLowerCase()));
+          // Ensure primary admin is always in whitelist
+          if (!filtered.some(u => u.email.toLowerCase() === DEFAULT_AUTH_USERS[0].email.toLowerCase())) {
+            filtered.unshift(DEFAULT_AUTH_USERS[0]);
+          }
+          this.saveUsers(filtered);
+          return filtered;
+        }
       } catch (e) {
         console.error("Error loading users", e);
       }
@@ -200,8 +184,8 @@ class AuthRBACEngine {
 
   async revokePermission(email) {
     const cleanEmail = email.toLowerCase().trim();
-    if (cleanEmail === 'admin@treeoflifemissions.org') {
-      alert("Cannot revoke super administrator.");
+    if (cleanEmail === DEFAULT_AUTH_USERS[0].email.toLowerCase()) {
+      alert("Cannot revoke primary super administrator.");
       return;
     }
     this.users = this.users.filter(u => u.email.toLowerCase() !== cleanEmail);
@@ -471,11 +455,11 @@ class AuthRBACEngine {
         <td>${u.email}</td>
         <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
         <td>
-          ${u.email !== 'admin@treeoflifemissions.org' ? `
+          ${u.email.toLowerCase() !== DEFAULT_AUTH_USERS[0].email.toLowerCase() ? `
             <button class="btn-revoke" onclick="window.authRBAC.revokePermission('${u.email}')">
               <i class="fa-solid fa-trash-can"></i> Revoke
             </button>
-          ` : '<span style="color: var(--color-text-muted); font-size: 0.76rem;">Permanent</span>'}
+          ` : '<span style="color: var(--color-text-muted); font-size: 0.76rem; font-weight: 750;">Super</span>'}
         </td>
       </tr>
     `).join('');

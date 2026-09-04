@@ -770,11 +770,11 @@ class AdminSettingsEngine {
         <td>${u.email}</td>
         <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
         <td style="text-align: center;">
-          ${u.email !== 'admin@treeoflifemissions.org' ? `
+          ${u.email.toLowerCase() !== (window.authRBAC.users[0]?.email?.toLowerCase() || 'john0823.lee@gmail.com') ? `
             <button type="button" class="btn-remove-joiner" onclick="window.authRBAC.revokePermission('${u.email}'); window.adminSettings.renderUsersTab();" title="Revoke Permission">
               <i class="fa-solid fa-trash-can"></i>
             </button>
-          ` : '<span style="color: var(--color-text-muted); font-size: 0.72rem;">Super</span>'}
+          ` : '<span style="color: var(--color-text-muted); font-size: 0.72rem; font-weight: 750;">Super</span>'}
         </td>
       </tr>
     `).join('');

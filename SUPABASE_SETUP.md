@@ -55,9 +55,9 @@ ALTER TABLE public.staff_users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public Read Staff" ON public.staff_users FOR SELECT USING (true);
 CREATE POLICY "Admin Manage Staff" ON public.staff_users FOR ALL USING (true);
 
--- 최초 최고 관리자(Super Admin) 등록 (※ 본인 이메일로 변경해주세요!)
+-- 최초 최고 관리자(Super Admin) 등록 (※ 사용자 본인 계정)
 INSERT INTO public.staff_users (id, email, name, role)
-VALUES ('admin_primary', '사용자님의_실제이메일@gmail.com', 'Super Admin', 'admin')
+VALUES ('admin_primary', 'john0823.lee@gmail.com', 'Super Admin', 'admin')
 ON CONFLICT (email) DO NOTHING;
 
 -- =============================================================================
