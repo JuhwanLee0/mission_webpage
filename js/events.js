@@ -659,6 +659,8 @@ class MinistryEventsEngine {
   render() {
     if (!this.container) return;
     this.updateMonthFilterUI();
+    const isStaff = Boolean(window.authRBAC && window.authRBAC.hasUploadPermission());
+    const isAdmin = Boolean(window.authRBAC && window.authRBAC.isAdmin());
     const filtered = this.getFilteredEvents();
 
     if (filtered.length === 0) {
@@ -700,10 +702,15 @@ class MinistryEventsEngine {
                   </span>
                 ` : ''}
               </div>
-              <div class="event-meta-right">
-                <i class="fa-solid fa-clock"></i> ${evt.time}
-                <span style="margin: 0 4px;">•</span>
-                <i class="fa-solid fa-location-dot"></i> ${evt.location}
+              <div class="event-meta-right" style="display: flex; align-items: center; gap: 8px;">
+                <span><i class="fa-solid fa-clock"></i> ${evt.time}</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-location-dot"></i> ${evt.location}</span>
+                ${isStaff ? `
+                  <button type="button" class="btn-delete-event" onclick="window.eventsEngine.deleteEvent('${evt.id}', event)" title="Delete Operation (Staff Only)" style="background: none; border: 1px solid rgba(220, 38, 38, 0.25); color: #dc2626; border-radius: 6px; padding: 2px 7px; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; transition: all 0.15s;" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='none'">
+                    <i class="fa-solid fa-trash-can"></i> Delete
+                  </button>
+                ` : ''}
               </div>
             </div>
 
@@ -883,6 +890,23 @@ class MinistryEventsEngine {
     return dateStr.split('-')[2] || '01';
   }
 
+  deleteEvent(eventId, event) {
+    if (event) event.stopPropagation();
+    if (!window.authRBAC || !window.authRBAC.hasUploadPermission()) {
+      alert("Staff Login Required: Only authorized ministry staff or administrators can delete operations.");
+      if (window.authRBAC) window.authRBAC.openLoginModal();
+      return;
+    }
+
+    const evt = this.events.find(e => e.id === eventId);
+    const title = evt ? evt.title : "this operation";
+    if (confirm(`Are you sure you want to delete "${title}"?`)) {
+      this.events = this.events.filter(e => e.id !== eventId);
+      this.saveEvents(this.events);
+      this.render();
+    }
+  }
+
   openCreateModal() {
     if (this.createModal) {
       this.createModal.classList.add('active');
@@ -936,6 +960,18 @@ class MinistryEventsEngine {
 
     this.events.unshift(newEvent);
     this.saveEvents(this.events);
+
+    // Auto-adjust view to the created event's date and show in All Operations mode
+    if (date) {
+      const eventDate = new Date(date + "T00:00:00");
+      if (!isNaN(eventDate.getTime())) {
+        this.currentViewDate = eventDate;
+      }
+    }
+    this.monthFilterMode = 'all';
+    this.currentCategory = 'all';
+    this.updateMonthFilterUI();
+    this.renderCategoryFilters();
 
     if (sendEmail) {
       alert(`Event Published & Broadcast Dispatched!\n\n"${title}" has been added to the schedule.`);
