@@ -85,7 +85,7 @@ CREATE POLICY "Staff Manage Announcements" ON public.announcements FOR ALL USING
 ## 3. Storage 버킷 생성 (미디어 저장소)
 1. 좌측 메뉴에서 **Storage** 클릭.
 2. **New Bucket** 클릭:
-   - **Bucket name**: `mission-photos` (소문자 필수)
+   - **Bucket name**: `mission-photo` (소문자 필수)
    - **Public bucket**: **ON (활성화)** ➔ 전 세계 방문자에게 사진 CDN URL 제공을 위해 필수입니다.
 3. 생성 완료 후 **Policies** 탭에서 누구나 업로드/열람할 수 있도록 정책을 설정하거나 기본 Public 설정을 유지합니다.
 
