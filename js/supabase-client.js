@@ -8,7 +8,7 @@ const SUPABASE_DEFAULT_CONFIG = {
   // 여기에 발급받으신 Project URL과 anon public 키를 넣어주세요.
   url: localStorage.getItem('tol_supabase_url') || 'https://여기에_프로젝트_URL.supabase.co',
   anonKey: localStorage.getItem('tol_supabase_key') || '여기에_anon_public_키_입력',
-  bucketName: 'mission-photos'
+  bucketName: 'mission-photo'
 };
 
 class SupabaseHybridClient {
