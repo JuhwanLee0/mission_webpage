@@ -112,83 +112,142 @@
 
 .gallery-card {
   background: #FFFFFF;
-  border-radius: 12px;
-  border: 1px solid var(--color-sand-border, #D8D1C5);
+  border-radius: 16px;
+  border: 1px solid #D8D1C5;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(18, 54, 37, 0.04);
-  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(18, 54, 37, 0.05);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .gallery-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(18, 54, 37, 0.1);
-  border-color: var(--color-forest, #123625);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(18, 54, 37, 0.12);
+  border-color: #123625;
 }
 
-.gallery-card-img-wrap {
+/* Fixed 4:3 Aspect-Ratio Media Container with Warm Skeleton Shimmer */
+.gallery-card-img-wrap,
+.gallery-img-wrap {
   position: relative;
   width: 100%;
-  padding-bottom: 70%;
+  aspect-ratio: 4 / 3;
+  min-height: 220px;
+  background-color: #EFEAE2;
+  background-image: linear-gradient(90deg, #EFEAE2 0%, #F8F5EE 50%, #EFEAE2 100%);
+  background-size: 200% 100%;
+  animation: gallerySkeletonPulse 1.8s ease-in-out infinite;
   overflow: hidden;
-  background: #EBE5DB;
 }
 
-.gallery-card-img-wrap img {
+@keyframes gallerySkeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.gallery-card-img-wrap img,
+.gallery-img-wrap img {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s ease;
 }
 
-.gallery-card:hover .gallery-card-img-wrap img {
+.gallery-card-img-wrap img.is-loaded,
+.gallery-img-wrap img.is-loaded {
+  opacity: 1;
+}
+
+.gallery-card:hover .gallery-card-img-wrap img,
+.gallery-card:hover .gallery-img-wrap img {
   transform: scale(1.04);
 }
 
-.gallery-card-tag {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: rgba(18, 54, 37, 0.88);
-  color: #FFFFFF;
-  backdrop-filter: blur(8px);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+/* Floating Clean Frosted Pill Badge */
+.gallery-card-tag,
+.gallery-tag-badge {
+  position: absolute !important;
+  top: 14px !important;
+  left: 14px !important;
+  background: rgba(18, 54, 37, 0.90) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  z-index: 3 !important;
+  line-height: 1 !important;
 }
 
+/* Card Body & Editorial Typography */
 .gallery-card-body {
-  padding: 16px 18px;
+  padding: 18px 20px 20px 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: #FFFFFF;
 }
 
 .gallery-card-caption {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-forest, #123625);
-  line-height: 1.45;
-  margin-bottom: 12px;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 0.92rem !important;
+  font-weight: 500 !important;
+  color: #1A2821 !important;
+  line-height: 1.6 !important;
+  letter-spacing: -0.015em !important;
+  margin: 0 0 16px 0 !important;
   flex: 1;
 }
 
 .gallery-card-meta {
-  display: flex;
-  justify-content: space-between;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif !important;
+  font-size: 0.8rem !important;
+  color: #556B5D !important;
+  border-top: 1px solid #ECE7DF !important;
+  padding-top: 12px !important;
+  margin-top: auto !important;
+}
+
+.gallery-location {
+  display: inline-flex;
   align-items: center;
-  font-size: 0.78rem;
-  color: var(--color-text-muted, #556B5D);
-  border-top: 1px solid var(--color-sand-border, #D8D1C5);
-  padding-top: 10px;
+  gap: 6px;
+  color: #556B5D;
+  font-weight: 500;
+}
+
+.gallery-location i {
+  color: #123625;
+  font-size: 0.82rem;
+}
+
+.gallery-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #C96623;
+  font-weight: 700;
+}
+
+.gallery-date i {
+  font-size: 0.82rem;
 }
 
 /* Lightbox Modal */

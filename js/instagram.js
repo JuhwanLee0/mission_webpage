@@ -274,6 +274,19 @@ class PhotoGalleryEngine {
     return this.photos.filter(p => p.tag === this.currentTag);
   }
 
+  getThumbnailUrl(url) {
+    if (!url) return '';
+    // If it's Squarespace CDN, optimize thumbnail size to 500w (reduces ~500KB to ~44KB)
+    if (url.includes('squarespace-cdn.com') && !url.includes('format=')) {
+      return url + (url.includes('?') ? '&format=500w' : '?format=500w');
+    }
+    // If it's Unsplash, use w=600&q=80
+    if (url.includes('unsplash.com') && !url.includes('w=')) {
+      return url + (url.includes('?') ? '&w=600&q=80&auto=format' : '?w=600&q=80&auto=format');
+    }
+    return url;
+  }
+
   render() {
     if (!this.grid) return;
     const filtered = this.getFiltered();
@@ -291,21 +304,37 @@ class PhotoGalleryEngine {
       return;
     }
 
-    this.grid.innerHTML = filtered.map(item => `
-      <div class="gallery-card" data-id="${item.id}">
-        <div class="gallery-img-wrap">
-          <img src="${item.imageUrl}" alt="${item.caption}" class="${item.filter || 'filter-normal'}" loading="lazy" />
-          <span class="gallery-tag-badge">#${item.tag.toUpperCase()}</span>
-        </div>
-        <div class="gallery-card-body">
-          <p class="gallery-card-caption">${item.caption}</p>
-          <div class="gallery-card-meta">
-            <span class="gallery-location"><i class="fa-solid fa-location-dot"></i> ${item.location || 'Bryan, TX'}</span>
-            <span class="gallery-date" style="color: var(--color-amber); font-weight: 700;"><i class="fa-regular fa-calendar"></i> ${item.date || 'Recent'}</span>
+    this.grid.innerHTML = filtered.map((item, idx) => {
+      const isPriority = idx < 6;
+      const thumbUrl = this.getThumbnailUrl(item.imageUrl);
+      return `
+        <div class="gallery-card" data-id="${item.id}">
+          <div class="gallery-card-img-wrap">
+            <img src="${thumbUrl}" 
+                 alt="${item.caption || 'Tree of Life Mission Photo'}" 
+                 class="${item.filter || 'filter-normal'}" 
+                 ${isPriority ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'} 
+                 decoding="async"
+                 onload="this.classList.add('is-loaded')" />
+            <span class="gallery-card-tag">#${item.tag.toUpperCase()}</span>
+          </div>
+          <div class="gallery-card-body">
+            <p class="gallery-card-caption">${item.caption}</p>
+            <div class="gallery-card-meta">
+              <span class="gallery-location"><i class="fa-solid fa-location-dot"></i> ${item.location || 'Bryan, TX'}</span>
+              <span class="gallery-date"><i class="fa-regular fa-calendar"></i> ${this.formatDateDisplay(item.date)}</span>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
+    // Handle any images already completed or cached
+    this.grid.querySelectorAll('.gallery-card-img-wrap img').forEach(img => {
+      if (img.complete) {
+        img.classList.add('is-loaded');
+      }
+    });
 
     // Bind card click to lightbox
     this.grid.querySelectorAll('.gallery-card').forEach(card => {
