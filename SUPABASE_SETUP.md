@@ -19,35 +19,65 @@ Tree of Life Global Missions 웹사이트에 **Supabase 클라우드 데이터�
 Supabase 대시보드 좌측 메뉴의 **SQL Editor**로 이동한 후 **New Query**를 누르고 다음 SQL을 복사하여 실행(Run)합니다:
 
 ```sql
--- 1. 사진/미디어 테이블 생성
+-- =============================================================================
+-- 1. 선교 사진 아카이브 테이블 (photos)
+-- =============================================================================
 CREATE TABLE IF NOT EXISTS public.photos (
   id TEXT PRIMARY KEY,
   image_url TEXT NOT NULL,
   caption TEXT,
-  tag TEXT DEFAULT 'community',
-  date DATE DEFAULT CURRENT_DATE,
+  tag TEXT DEFAULT 'campus',
+  date TEXT DEFAULT CURRENT_DATE::text,
   location TEXT DEFAULT 'Bryan & College Station, TX',
-  author TEXT,
+  author TEXT DEFAULT 'Media Staff',
+  filter TEXT DEFAULT 'filter-normal',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 2. Row Level Security (RLS) 활성화
 ALTER TABLE public.photos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Photos" ON public.photos FOR SELECT USING (true);
+CREATE POLICY "Staff Insert Photos" ON public.photos FOR INSERT WITH CHECK (true);
+CREATE POLICY "Staff Delete Photos" ON public.photos FOR DELETE USING (true);
 
--- 3. 모든 방문자가 갤러리 사진을 볼 수 있도록 허용
-CREATE POLICY "Public Read Access" 
-ON public.photos FOR SELECT 
-USING (true);
+-- =============================================================================
+-- 2. 스태프 & 최고 관리자 화이트리스트 테이블 (staff_users)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.staff_users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  role TEXT DEFAULT 'staff', -- 'admin' 또는 'staff'
+  avatar TEXT DEFAULT '',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
 
--- 4. 로그인된 스태프가 사진을 등록할 수 있도록 허용
-CREATE POLICY "Staff Insert Photos" 
-ON public.photos FOR INSERT 
-WITH CHECK (true);
+ALTER TABLE public.staff_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Staff" ON public.staff_users FOR SELECT USING (true);
+CREATE POLICY "Admin Manage Staff" ON public.staff_users FOR ALL USING (true);
 
--- 5. 스태프 사진 삭제 허용
-CREATE POLICY "Staff Delete Photos" 
-ON public.photos FOR DELETE 
-USING (true);
+-- 최초 최고 관리자(Super Admin) 등록 (※ 본인 이메일로 변경해주세요!)
+INSERT INTO public.staff_users (id, email, name, role)
+VALUES ('admin_primary', '사용자님의_실제이메일@gmail.com', 'Super Admin', 'admin')
+ON CONFLICT (email) DO NOTHING;
+
+-- =============================================================================
+-- 3. 공지사항 게시판 테이블 (announcements)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.announcements (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  category TEXT DEFAULT 'campus',
+  date DATE DEFAULT CURRENT_DATE,
+  pinned BOOLEAN DEFAULT false,
+  author TEXT NOT NULL,
+  content TEXT NOT NULL,
+  image_url TEXT DEFAULT '',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Announcements" ON public.announcements FOR SELECT USING (true);
+CREATE POLICY "Staff Manage Announcements" ON public.announcements FOR ALL USING (true);
 ```
 
 ---
