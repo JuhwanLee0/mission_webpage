@@ -369,8 +369,8 @@ class AdminSettingsEngine {
 
             <!-- Grant Form -->
             <form id="adminGrantForm" style="display: flex; gap: 8px; margin-bottom: 14px;" onsubmit="window.adminSettings.handleGrantUser(event)">
-              <input type="email" id="grantUserEmail" class="form-input" placeholder="leader@tamu.edu" required style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
-              <input type="text" id="grantUserName" class="form-input" placeholder="Sarah Chen" style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
+              <input type="text" id="grantUserEmail" class="form-input" placeholder="staff01 or leader@tamu.edu" required style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
+              <input type="text" id="grantUserName" class="form-input" placeholder="Staff Name" style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
               <input type="password" id="grantUserPassword" class="form-input" placeholder="Password" required style="flex: 2; padding: 8px 12px; font-size: 0.82rem;" />
               <select id="grantUserRole" class="form-input" style="flex: 1; padding: 8px 10px; font-size: 0.82rem;">
                 <option value="staff">Staff</option>
@@ -386,7 +386,7 @@ class AdminSettingsEngine {
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Email</th>
+                    <th>Email / ID</th>
                     <th>Role</th>
                     <th style="text-align: center; width: 60px;">Action</th>
                   </tr>
@@ -768,10 +768,10 @@ class AdminSettingsEngine {
     tbody.innerHTML = window.authRBAC.users.map(u => `
       <tr>
         <td><strong>${u.name}</strong></td>
-        <td>${u.email}</td>
+        <td>${u.username ? `${u.username} <span style="color:var(--color-text-muted); font-size:0.75rem;">(${u.email})</span>` : u.email}</td>
         <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
         <td style="text-align: center;">
-          ${u.email.toLowerCase() !== (window.authRBAC.users[0]?.email?.toLowerCase() || 'john0823.lee@gmail.com') ? `
+          ${(u.email.toLowerCase() !== (window.authRBAC.users[0]?.email?.toLowerCase() || 'john0823.lee@gmail.com') && u.username !== 'admin') ? `
             <button type="button" class="btn-remove-joiner" onclick="window.authRBAC.revokePermission('${u.email}'); window.adminSettings.renderUsersTab();" title="Revoke Permission">
               <i class="fa-solid fa-trash-can"></i>
             </button>
@@ -783,19 +783,19 @@ class AdminSettingsEngine {
 
   handleGrantUser(e) {
     e.preventDefault();
-    const email = document.getElementById('grantUserEmail').value.trim();
+    const identifier = document.getElementById('grantUserEmail').value.trim();
     const name = document.getElementById('grantUserName').value.trim();
     const password = document.getElementById('grantUserPassword') ? document.getElementById('grantUserPassword').value.trim() : 'TreeOfLife2026!';
     const role = document.getElementById('grantUserRole').value;
 
-    if (!email) return;
+    if (!identifier) return;
 
-    window.authRBAC.grantPermission(email, name, role, password);
+    window.authRBAC.grantPermission(identifier, name, role, password);
     document.getElementById('grantUserEmail').value = '';
     document.getElementById('grantUserName').value = '';
     if (document.getElementById('grantUserPassword')) document.getElementById('grantUserPassword').value = '';
     this.renderUsersTab();
-    alert(`Permission granted to ${name || email} as ${role.toUpperCase()} (Password configured)!`);
+    alert(`Permission granted to ${name || identifier} as ${role.toUpperCase()} (ID/Password configured)!`);
   }
 
   /* ==========================================================================

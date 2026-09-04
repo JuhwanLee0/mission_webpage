@@ -76,8 +76,12 @@ class SupabaseHybridClient {
   /* ==========================================================================
      1. Authentication API (Strict Whitelist Access Control)
      ========================================================================== */
-  async signIn(email, password = '') {
-    const cleanEmail = email.trim().toLowerCase();
+  async signIn(identifier, password = '') {
+    const cleanId = (identifier || '').trim().toLowerCase();
+
+    if (!cleanId) {
+      return { success: false, error: 'Please enter your staff email or ID.' };
+    }
 
     if (!password) {
       return { success: false, error: 'Please enter your password.' };
@@ -86,11 +90,14 @@ class SupabaseHybridClient {
     // 1. Live Supabase Database Whitelist & Password Check
     if (this.isLive()) {
       try {
-        const { data: staffMember, error: staffErr } = await this.client
-          .from('staff_users')
-          .select('*')
-          .eq('email', cleanEmail)
-          .maybeSingle();
+        let query = this.client.from('staff_users').select('*');
+        if (cleanId.includes('@')) {
+          query = query.eq('email', cleanId);
+        } else {
+          // If pure ID, check email matches cleanId or cleanId@staff.tol or name
+          query = query.or(`email.eq.${cleanId},email.eq.${cleanId}@staff.tol,name.eq.${cleanId}`);
+        }
+        const { data: staffMember, error: staffErr } = await query.maybeSingle();
 
         if (staffErr) {
           console.warn('[Supabase] staff_users query note:', staffErr.message);
@@ -108,7 +115,8 @@ class SupabaseHybridClient {
           const user = {
             id: staffMember.id || ('usr_' + Date.now()),
             email: staffMember.email,
-            name: staffMember.name || cleanEmail.split('@')[0],
+            username: cleanId.includes('@') ? staffMember.email.split('@')[0] : cleanId,
+            name: staffMember.name || cleanId,
             role: staffMember.role || 'staff',
             avatar: staffMember.avatar || '',
             provider: 'supabase'
@@ -119,7 +127,7 @@ class SupabaseHybridClient {
           // Explicit rejection: not in Supabase staff whitelist
           return {
             success: false,
-            error: `Access Denied: "${cleanEmail}" is not in the authorized staff list.\n\nPlease ask an Administrator to register your email in the Admin Center.`
+            error: `Access Denied: "${cleanId}" is not in the authorized staff list.\n\nPlease ask an Administrator to register your ID or email in the Admin Center.`
           };
         }
       } catch (cloudErr) {
@@ -129,7 +137,11 @@ class SupabaseHybridClient {
 
     // 2. Local Fallback Whitelist & Password Check
     const allowedUsers = (window.authRBAC && window.authRBAC.users) ? window.authRBAC.users : [];
-    const matched = allowedUsers.find(u => u.email.toLowerCase() === cleanEmail);
+    const matched = allowedUsers.find(u => 
+      (u.email && u.email.toLowerCase() === cleanId) ||
+      (u.username && u.username.toLowerCase() === cleanId) ||
+      (u.id && u.id.toLowerCase() === cleanId)
+    );
 
     if (matched) {
       if (matched.password && matched.password !== password) {
@@ -142,10 +154,10 @@ class SupabaseHybridClient {
       return { success: true, user: matched };
     }
 
-    // Strict Rejection: Unknown email
+    // Strict Rejection: Unknown identifier
     return {
       success: false,
-      error: `Access Denied: "${cleanEmail}" is not registered as an authorized staff account.\n\nOnly pre-approved team members can access staff features.`
+      error: `Access Denied: "${cleanId}" is not registered as an authorized staff account.\n\nOnly pre-approved team members can access staff features.`
     };
   }
 

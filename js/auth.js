@@ -7,6 +7,7 @@
 const DEFAULT_AUTH_USERS = [
   {
     id: "usr_admin_primary",
+    username: "admin",
     email: "john0823.lee@gmail.com",
     name: "Juhwan Lee",
     role: "admin", // 'admin' | 'staff'
@@ -29,10 +30,14 @@ class AuthRBACEngine {
       try {
         const parsed = JSON.parse(savedSession);
         // Clean out any rogue/test sessions like 111@gmail.com
-        const isAuthorized = parsed && parsed.email && (
-          this.users.some(u => u.email.toLowerCase() === parsed.email.toLowerCase()) ||
+        const isAuthorized = parsed && (parsed.email || parsed.username) && (
+          this.users.some(u => 
+            (parsed.email && u.email && u.email.toLowerCase() === parsed.email.toLowerCase()) ||
+            (parsed.username && u.username && u.username.toLowerCase() === parsed.username.toLowerCase()) ||
+            (parsed.id && u.id && u.id.toLowerCase() === parsed.id.toLowerCase())
+          ) ||
           parsed.provider === 'supabase'
-        ) && !parsed.email.includes('111@');
+        ) && !(parsed.email && parsed.email.includes('111@'));
 
         if (isAuthorized) {
           this.currentUser = parsed;
@@ -95,8 +100,13 @@ class AuthRBACEngine {
     this.renderAuthStatus();
   }
 
-  async login(email, password = '') {
-    const cleanEmail = email.trim().toLowerCase();
+  async login(identifier, password = '') {
+    const cleanId = (identifier || '').trim().toLowerCase();
+
+    if (!cleanId) {
+      alert("Please enter your staff email or ID.");
+      return false;
+    }
 
     if (!password) {
       alert("Please enter your password.");
@@ -105,7 +115,7 @@ class AuthRBACEngine {
 
     // 1. Supabase Hybrid Client Check (Queries Supabase staff_users whitelist & password)
     if (window.supabaseClient) {
-      const result = await window.supabaseClient.signIn(cleanEmail, password);
+      const result = await window.supabaseClient.signIn(cleanId, password);
       if (result && result.success) {
         this.currentUser = result.user;
         this.closeLoginModal();
@@ -120,8 +130,12 @@ class AuthRBACEngine {
       }
     }
 
-    // 2. Preset Authorized Users Fallback
-    const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
+    // 2. Preset Authorized Users Fallback (Matches email, username, or id)
+    const existing = this.users.find(u => 
+      (u.email && u.email.toLowerCase() === cleanId) ||
+      (u.username && u.username.toLowerCase() === cleanId) ||
+      (u.id && u.id.toLowerCase() === cleanId)
+    );
     if (existing) {
       if (existing.password && existing.password !== password) {
         alert("Authentication Failed: Incorrect password. Please try again.");
@@ -136,7 +150,7 @@ class AuthRBACEngine {
     }
 
     // 3. Strict Rejection: Unregistered Accounts are completely blocked
-    alert(`Access Denied: "${cleanEmail}" is not registered as an authorized account.\n\nOnly registered admin and staff members can access ministry operations.\nPlease contact the administrator.`);
+    alert(`Access Denied: "${cleanId}" is not registered as an authorized account.\n\nOnly registered admin and staff members can access ministry operations.\nPlease contact the administrator.`);
     return false;
   }
 
@@ -156,19 +170,33 @@ class AuthRBACEngine {
     return this.currentUser && this.currentUser.role === 'admin';
   }
 
-  async grantPermission(email, name, role = 'staff', password = 'TreeOfLife2026!') {
-    const cleanEmail = email.toLowerCase().trim();
+  async grantPermission(identifier, name, role = 'staff', password = 'TreeOfLife2026!') {
+    const cleanId = (identifier || '').toLowerCase().trim();
+    if (!cleanId) return;
+
     const userPassword = password || 'TreeOfLife2026!';
-    const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
+    const isEmail = cleanId.includes('@');
+    const emailVal = isEmail ? cleanId : `${cleanId}@staff.tol`;
+    const usernameVal = isEmail ? cleanId.split('@')[0] : cleanId;
+
+    const existing = this.users.find(u => 
+      (u.email && u.email.toLowerCase() === cleanId) ||
+      (u.username && u.username.toLowerCase() === cleanId) ||
+      (u.id && u.id.toLowerCase() === cleanId)
+    );
+
     if (existing) {
       existing.role = role;
       if (name) existing.name = name;
       if (password) existing.password = userPassword;
+      if (!existing.username) existing.username = usernameVal;
+      if (!existing.email) existing.email = emailVal;
     } else {
       this.users.push({
         id: "usr_" + Date.now(),
-        email: cleanEmail,
-        name: name || cleanEmail.split('@')[0],
+        email: emailVal,
+        username: usernameVal,
+        name: name || usernameVal,
         role: role,
         password: userPassword,
         avatar: "",
@@ -177,39 +205,54 @@ class AuthRBACEngine {
     }
     this.saveUsers(this.users);
     this.renderRbacTable();
+    if (window.adminSettings && typeof window.adminSettings.renderUsersTab === 'function') {
+      window.adminSettings.renderUsersTab();
+    }
 
     // Sync to Supabase staff_users table if connected
     if (window.supabaseClient && window.supabaseClient.isLive()) {
       try {
         await window.supabaseClient.client.from('staff_users').upsert({
           id: 'usr_' + Date.now(),
-          email: cleanEmail,
-          name: name || cleanEmail.split('@')[0],
+          email: emailVal,
+          name: name || usernameVal,
           role: role,
           password: userPassword
         }, { onConflict: 'email' });
-        console.log('[Supabase] Whitelist updated in cloud DB:', cleanEmail);
+        console.log('[Supabase] Whitelist updated in cloud DB:', emailVal);
       } catch (err) {
         console.warn('[Supabase] Failed to sync staff_users:', err);
       }
     }
   }
 
-  async revokePermission(email) {
-    const cleanEmail = email.toLowerCase().trim();
-    if (cleanEmail === DEFAULT_AUTH_USERS[0].email.toLowerCase()) {
+  async revokePermission(identifier) {
+    const cleanId = (identifier || '').toLowerCase().trim();
+    const primaryAdmin = DEFAULT_AUTH_USERS[0];
+    if (
+      cleanId === primaryAdmin.email.toLowerCase() ||
+      cleanId === (primaryAdmin.username && primaryAdmin.username.toLowerCase()) ||
+      cleanId === primaryAdmin.id.toLowerCase()
+    ) {
       alert("Cannot revoke primary super administrator.");
       return;
     }
-    this.users = this.users.filter(u => u.email.toLowerCase() !== cleanEmail);
+    this.users = this.users.filter(u => 
+      u.email.toLowerCase() !== cleanId &&
+      (u.username ? u.username.toLowerCase() !== cleanId : true) &&
+      u.id.toLowerCase() !== cleanId
+    );
     this.saveUsers(this.users);
     this.renderRbacTable();
+    if (window.adminSettings && typeof window.adminSettings.renderUsersTab === 'function') {
+      window.adminSettings.renderUsersTab();
+    }
 
     // Delete from Supabase staff_users table if connected
     if (window.supabaseClient && window.supabaseClient.isLive()) {
       try {
-        await window.supabaseClient.client.from('staff_users').delete().eq('email', cleanEmail);
-        console.log('[Supabase] Staff revoked in cloud DB:', cleanEmail);
+        await window.supabaseClient.client.from('staff_users').delete().or(`email.eq.${cleanId},email.eq.${cleanId}@staff.tol`);
+        console.log('[Supabase] Staff revoked in cloud DB:', cleanId);
       } catch (err) {
         console.warn('[Supabase] Failed to delete from staff_users:', err);
       }
@@ -310,12 +353,12 @@ class AuthRBACEngine {
           </div>
           <div style="padding: 24px;">
             <p style="font-size: 0.86rem; color: var(--color-text-muted); margin-bottom: 18px;">
-              Sign in with your verified staff or administrator email to manage announcements, schedules, and operations.
+              Sign in with your verified staff email or ID and password to access ministry operations.
             </p>
             <form id="staffLoginForm">
               <div class="form-group">
-                <label class="form-label" for="staffLoginEmail">Staff Email Address</label>
-                <input type="email" id="staffLoginEmail" class="form-input" placeholder="john0823.lee@gmail.com" required />
+                <label class="form-label" for="staffLoginEmail">Staff Email or ID</label>
+                <input type="text" id="staffLoginEmail" class="form-input" placeholder="admin, staff01, or email" required />
               </div>
               <div class="form-group" style="margin-top: 12px;">
                 <label class="form-label" for="staffLoginPassword">Password</label>
@@ -360,8 +403,8 @@ class AuthRBACEngine {
                   <input type="text" id="grantName" class="form-input" placeholder="Sarah Chen" required style="padding: 8px 10px; font-size: 0.85rem;" />
                 </div>
                 <div>
-                  <label class="form-label" style="font-size: 0.74rem;">Email</label>
-                  <input type="email" id="grantEmail" class="form-input" placeholder="sarah@tamu.edu" required style="padding: 8px 10px; font-size: 0.85rem;" />
+                  <label class="form-label" style="font-size: 0.74rem;">Email or ID</label>
+                  <input type="text" id="grantEmail" class="form-input" placeholder="staff01 or user@email.com" required style="padding: 8px 10px; font-size: 0.85rem;" />
                 </div>
                 <div>
                   <label class="form-label" style="font-size: 0.74rem;">Password</label>
@@ -384,7 +427,7 @@ class AuthRBACEngine {
               <thead>
                 <tr>
                   <th>Staff Name</th>
-                  <th>Email Address</th>
+                  <th>Email / ID</th>
                   <th>Role</th>
                   <th>Actions</th>
                 </tr>
@@ -475,10 +518,10 @@ class AuthRBACEngine {
     tbody.innerHTML = this.users.map(u => `
       <tr>
         <td><strong>${u.name}</strong></td>
-        <td>${u.email}</td>
+        <td>${u.username ? `${u.username} <span style="color:var(--color-text-muted); font-size:0.75rem;">(${u.email})</span>` : u.email}</td>
         <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
         <td>
-          ${u.email.toLowerCase() !== DEFAULT_AUTH_USERS[0].email.toLowerCase() ? `
+          ${(u.email.toLowerCase() !== DEFAULT_AUTH_USERS[0].email.toLowerCase() && u.username !== 'admin') ? `
             <button class="btn-revoke" onclick="window.authRBAC.revokePermission('${u.email}')">
               <i class="fa-solid fa-trash-can"></i> Revoke
             </button>
