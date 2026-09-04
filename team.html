@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meet the Team — Tree of Life Global Missions</title>
+  <link rel="icon" type="image/png" href="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <!-- Social Media & OpenGraph Metadata (KakaoTalk / iMessage / Instagram / Facebook) -->
+  <meta name="description" content="Meet the leadership, board members, and campus servant fellowship teams (IM FBC) at Tree of Life Global Missions." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tree of Life Global Missions" />
+  <meta property="og:title" content="Meet the Team — Tree of Life Global Missions" />
+  <meta property="og:description" content="Meet the leadership, board members, and campus servant fellowship teams (IM FBC) at Tree of Life Global Missions." />
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Meet the Team — Tree of Life Global Missions" />
+  <meta name="twitter:description" content="Meet the leadership, board members, and campus servant fellowship teams (IM FBC) at Tree of Life Global Missions." />
+  <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+
+  
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .team-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 24px !important;
+    }
+    @media (max-width: 880px) {
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+    @media (max-width: 540px) {
+      .team-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+    .team-avatar-initials {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #123625 0%, #1F4E38 100%);
+      color: #FFFFFF;
+      font-size: 2.2rem;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+    }
+    .team-group-showcase {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .team-group-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 1px solid #D8D1C5;
+      box-shadow: 0 6px 24px rgba(18, 54, 37, 0.06);
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .team-group-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(18, 54, 37, 0.1);
+    }
+    .team-group-img-wrap {
+      position: relative;
+      width: 100%;
+      max-height: 520px;
+      overflow: hidden;
+      background: #EBE5DB;
+    }
+    .team-group-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .team-group-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(18, 54, 37, 0.9);
+      color: #FFFFFF;
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .team-group-body {
+      padding: 28px 32px;
+    }
+    .team-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .team-group-name {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #123625;
+      letter-spacing: -0.02em;
+      margin: 0 0 4px 0;
+    }
+    .team-group-role {
+      font-size: 0.85rem;
+      font-weight: 750;
+      color: #C96623;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .team-group-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(18, 54, 37, 0.08);
+      color: #123625;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+    .team-group-desc {
+      font-size: 0.94rem;
+      color: #556B5D;
+      line-height: 1.65;
+      margin: 0 0 20px 0;
+    }
+    .team-group-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 0.82rem;
+      color: #556B5D;
+      border-top: 1px solid #D8D1C5;
+      padding-top: 16px;
+      flex-wrap: wrap;
+    }
+    .team-group-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo">
+        <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" alt="Tree of Life Logo" class="brand-logo-img" />
+        <div class="brand-name-group">
+          <span class="brand-title">Tree of Life</span>
+          <span class="brand-subtitle">Global Missions</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="ministries.html" class="nav-link">Ministries</a></li>
+          <li><a href="watch.html" class="nav-link">Watch</a></li>
+          <li><a href="team.html" class="nav-link active">Team</a></li>
+          <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li><a href="announcements.html" class="nav-link">Announcements</a></li>
+          <li><a href="giving.html" class="nav-link">Giving</a></li>
+          <li><a href="events.html" class="nav-link">Schedule</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <div id="globalAuthContainer" class="global-auth-slot"></div>
+        <a href="giving.html" class="btn btn-primary">
+          <i class="fa-solid fa-heart"></i> Give Now
+        </a>
+        <button class="apple-hamburger-btn" id="appleHamburgerBtn" aria-label="Toggle Navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="section-tag">Leadership & Servants</span>
+        <h1 class="page-hero-title">Meet the Team</h1>
+        <p class="page-hero-desc">Dedicated to international student hospitality, prayer support, and native-language Bible distribution in Bryan & College Station.</p>
+      </div>
+    </section>
+
+    <!-- Leadership Section: 6 Team Members (2 rows x 3 columns) -->
+    <section class="section" style="padding-bottom: 40px;">
+      <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 36px;">
+          <span class="section-tag">Core Ministry Leadership</span>
+          <h2 class="section-title">Leadership & Team Members</h2>
+        </div>
+
+        <div class="team-grid">
+          
+          <!-- 1. Fayez Farag -->
+          <div class="team-card">
+            <div class="team-avatar-wrap">
+              <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/5ec0a69e-1837-48ac-ac74-6d464f6bd699/1.jpg" alt="Fayez Farag - Founder President" />
+            </div>
+            <h3 class="team-name">Fayez Farag</h3>
+            <div class="team-role">Founder President</div>
+            <p class="team-desc">Visionary leader dedicated to international scholar hospitality, prayer network, and native-language Bible access.</p>
+          </div>
+
+          <!-- 2. Aziz Farag -->
+          <div class="team-card">
+            <div class="team-avatar-wrap">
+              <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/635e7d6a-4c3d-4a56-b9f8-f375961b7f12/IMG_3502.jpeg" alt="Aziz Farag - Co-Founder" />
+            </div>
+            <h3 class="team-name">Aziz Farag</h3>
+            <div class="team-role">Co-Founder</div>
+            <p class="team-desc">Cultivating cross-cultural fellowship, global outreach initiatives, and warm family hospitality for students.</p>
+          </div>
+
+          <!-- 3. Michael Baer -->
+          <div class="team-card">
+            <div class="team-avatar-wrap">
+              <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/2a1cd6a4-ba18-43ab-b18b-e067ef67e708/2.jpg" alt="Michael Baer - Director" />
+            </div>
+            <h3 class="team-name">Michael Baer</h3>
+            <div class="team-role">Director</div>
+            <p class="team-desc">Directing campus outreach operations, Bible inventory logistics, and student volunteer team coordination.</p>
+          </div>
+
+          <!-- 4. Jim Koch -->
+          <div class="team-card">
+            <div class="team-avatar-wrap">
+              <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/bb156591-9fbc-426b-bdb5-029764c14053/1.jpg" alt="Jim Koch - Team member" />
+            </div>
+            <h3 class="team-name">Jim Koch</h3>
+            <div class="team-role">Team member</div>
+            <p class="team-desc">Providing faithful ministry support, campus outreach assistance, and community prayer oversight.</p>
+          </div>
+
+          <!-- 5. Alan Gaylord -->
+          <div class="team-card">
+            <div class="team-avatar-wrap">
+              <div class="team-avatar-initials" aria-label="Alan Gaylord">AG</div>
+            </div>
+            <h3 class="team-name">Alan Gaylord</h3>
+            <div class="team-role">Team member</div>
+            <p class="team-desc">Serving in student engagement, campus table discipleship, and native-language Bible distribution.</p>
+          </div>
+
+          <!-- 6. Brenda Trichel -->
+          <div class="team-card">
+            <div class="team-avatar-wrap">
+              <div class="team-avatar-initials" aria-label="Brenda Trichel">BT</div>
+            </div>
+            <h3 class="team-name">Brenda Trichel</h3>
+            <div class="team-role">Team member</div>
+            <p class="team-desc">Supporting cross-cultural student care, hospitality logistics, and community fellowship events.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Campus Ministry & Student Fellowship Teams (IM FBC) -->
+    <section class="section section-bg-sand" style="padding: 56px 0 72px 0;">
+      <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 36px;">
+          <span class="section-tag">Campus Ministry & Fellowship</span>
+          <h2 class="section-title">Ministry Teams</h2>
+          <p class="section-subtitle">Student fellowship and campus teams serving together across Blinn and Texas A&M.</p>
+        </div>
+
+        <div class="team-group-showcase">
+          <!-- IM FBC Team Card -->
+          <div class="team-group-card">
+            <div class="team-group-img-wrap">
+              <img src="images/im-fbc-team.jpg" alt="IM FBC Team Photo" />
+              <div class="team-group-badge">Student Fellowship</div>
+            </div>
+            <div class="team-group-body">
+              <div class="team-group-header">
+                <div>
+                  <h3 class="team-group-name">IM FBC</h3>
+                  <div class="team-group-role">Campus Ministry & Fellowship Team</div>
+                </div>
+                <span class="team-group-pill"><i class="fa-solid fa-users"></i> Campus Team</span>
+              </div>
+              
+              <!-- Editable Description: 설명은 추후 자유롭게 변경 가능합니다 -->
+              <p class="team-group-desc" id="imFbcDescription" style="margin-bottom: 0;">
+                <!-- [IM FBC 설명 작성 영역 - 추후 내용을 추가하실 수 있습니다] -->
+                Welcoming international scholars and college students through weekly fellowship, gospel outreach, and discipleship across Blinn and Texas A&M.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Tree of Life Global Missions</h3>
+          <p>Reaching international students in their native languages with the transforming love of Jesus Christ.</p>
+        </div>
+        <div>
+          <div class="footer-heading">Navigation</div>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="ministries.html">Ministries</a></li>
+            <li><a href="team.html">Meet the Team</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Action</div>
+          <ul class="footer-links">
+            <li><a href="gallery.html">Photo Gallery</a></li>
+            <li><a href="giving.html">How to Give</a></li>
+            <li><a href="events.html">Schedule & Join</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Headquarters</div>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.88rem;">2305 Barak Ln, Bryan, TX 77802</p>
+          <p style="color: var(--color-amber); font-size: 0.88rem; margin-top: 6px;">info@treeoflifemissions.org</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Tree of Life Global Missions. All Rights Reserved.</div>
+        <div>Bryan, Texas • 501(c)(3) Non-Profit</div>
+      </div>
+    </div>
+  </footer>
+
+    <!-- Supabase Cloud & DB Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin-settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

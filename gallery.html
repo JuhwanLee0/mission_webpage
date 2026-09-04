@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Gallery & Media Archive — Tree of Life Global Missions</title>
+  <link rel="icon" type="image/png" href="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <!-- Social Media & OpenGraph Metadata (KakaoTalk / iMessage / Instagram / Facebook) -->
+  <meta name="description" content="Explore campus outreach moments, international student dinners, and scripture distribution photos across Texas campuses." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tree of Life Global Missions" />
+  <meta property="og:title" content="Ministry Photo Archive & Live Gallery — Tree of Life Global Missions" />
+  <meta property="og:description" content="Explore campus outreach moments, international student dinners, and scripture distribution photos across Texas campuses." />
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ministry Photo Archive & Live Gallery — Tree of Life Global Missions" />
+  <meta name="twitter:description" content="Explore campus outreach moments, international student dinners, and scripture distribution photos across Texas campuses." />
+  <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+
+  
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/instagram-gallery.css?v=3.0" />
+
+  <style>
+    .gallery-app-wrapper {
+      background: #FFFFFF;
+      border-radius: 16px;
+      border: 1px solid #D8D1C5;
+      box-shadow: 0 4px 20px rgba(18, 54, 37, 0.05);
+      padding: 28px;
+    }
+    .gallery-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #D8D1C5;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .gallery-segmented-track {
+      display: inline-flex;
+      align-items: center;
+      background: #EBE5DB;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid #DDD6CB;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .gallery-tab-btn {
+      background: transparent;
+      color: #123625;
+      font-size: 0.86rem;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+      outline: none;
+      font-family: inherit;
+    }
+    .gallery-tab-btn:hover {
+      background: rgba(18, 54, 37, 0.08);
+      color: #123625;
+    }
+    .gallery-tab-btn.active {
+      background: #123625;
+      color: #FFFFFF;
+      font-weight: 800;
+      box-shadow: 0 2px 8px rgba(18, 54, 37, 0.22);
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+    }
+    @media (max-width: 580px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+  </style>
+
+<style>
+
+/* ==========================================================================
+   Staff Photo Uploader Modal (Apple-Grade 2-Column Responsive Layout)
+   ========================================================================== */
+.upload-modal-box {
+  background: #FFFFFF !important;
+  border-radius: 20px !important;
+  border: 1px solid #D8D1C5 !important;
+  box-shadow: 0 24px 70px rgba(18, 54, 37, 0.22) !important;
+  max-width: 820px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+}
+
+.upload-body-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 28px !important;
+  padding: 24px 28px 28px 28px !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+  .upload-body-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 20px !important;
+  }
+}
+
+/* Left Column: Dropzone */
+.upload-dropzone {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 330px !important;
+  background: #FAF7F2 !important;
+  border: 2px dashed #D8D1C5 !important;
+  border-radius: 14px !important;
+  padding: 30px 20px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+.upload-dropzone:hover {
+  background: #F3EFEA !important;
+  border-color: #123625 !important;
+}
+
+.dropzone-icon {
+  font-size: 3rem !important;
+  color: #123625 !important;
+  margin-bottom: 14px !important;
+}
+
+.upload-dropzone h4 {
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  color: #123625 !important;
+  margin: 0 0 6px 0 !important;
+}
+
+.upload-dropzone p {
+  font-size: 0.8rem !important;
+  color: #556B5D !important;
+  margin: 0 0 18px 0 !important;
+}
+
+/* Left Column: Preview & Filter (HIDDEN BY DEFAULT!) */
+.upload-preview-area {
+  display: none !important; /* CRITICAL: Hidden until photo chosen */
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.upload-preview-area.active {
+  display: flex !important;
+}
+
+.preview-img-wrap {
+  width: 100% !important;
+  height: 240px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #111111 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #D8D1C5 !important;
+}
+
+.preview-img-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: filter 0.2s ease !important;
+}
+
+.filter-section-title {
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: #123625 !important;
+  margin-top: 4px !important;
+}
+
+.filter-palette-bar {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  padding-bottom: 6px !important;
+  scrollbar-width: thin !important;
+}
+
+.filter-thumb-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  padding: 4px !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  transition: background 0.15s ease !important;
+}
+
+.filter-thumb-btn.active {
+  background: rgba(18, 54, 37, 0.09) !important;
+}
+
+.filter-thumb-box {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 2px solid transparent !important;
+  background: #EBE5DB !important;
+}
+
+.filter-thumb-btn.active .filter-thumb-box {
+  border-color: #123625 !important;
+  box-shadow: 0 0 0 2px rgba(18, 54, 37, 0.2) !important;
+}
+
+.filter-thumb-box img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.filter-name {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: #556B5D !important;
+}
+
+.filter-thumb-btn.active .filter-name {
+  color: #123625 !important;
+  font-weight: 850 !important;
+}
+
+.btn-change-photo {
+  align-self: flex-start !important;
+  padding: 6px 14px !important;
+  font-size: 0.8rem !important;
+  margin-top: 4px !important;
+}
+
+/* Instagram CSS Filter Presets */
+.filter-normal { filter: none !important; }
+.filter-clarendon { filter: contrast(1.2) saturate(1.25) !important; }
+.filter-juno { filter: contrast(1.15) saturate(1.3) brightness(1.05) !important; }
+.filter-warm { filter: sepia(0.25) saturate(1.2) contrast(1.05) !important; }
+.filter-vintage { filter: sepia(0.4) contrast(0.9) brightness(0.95) !important; }
+.filter-bw { filter: grayscale(1) contrast(1.2) !important; }
+
+/* Right Column: Form Info */
+.upload-form-side {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.form-row-2col {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+}
+
+.modal-action-bar {
+  margin-top: auto !important;
+  padding-top: 10px !important;
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo">
+        <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" alt="Tree of Life Logo" class="brand-logo-img" />
+        <div class="brand-name-group">
+          <span class="brand-title">Tree of Life</span>
+          <span class="brand-subtitle">Global Missions</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="ministries.html" class="nav-link">Ministries</a></li>
+          <li><a href="watch.html" class="nav-link">Watch</a></li>
+          <li><a href="team.html" class="nav-link">Team</a></li>
+          <li><a href="gallery.html" class="nav-link active">Gallery</a></li>
+          <li><a href="announcements.html" class="nav-link">Announcements</a></li>
+          <li><a href="giving.html" class="nav-link">Giving</a></li>
+          <li><a href="events.html" class="nav-link">Schedule</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <div id="globalAuthContainer" class="global-auth-slot"></div>
+        <a href="giving.html" class="btn btn-primary">
+          <i class="fa-solid fa-heart"></i> Give Now
+        </a>
+        <button class="apple-hamburger-btn" id="appleHamburgerBtn" aria-label="Toggle Navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="section-tag">Authentic Visual Archive</span>
+        <h1 class="page-hero-title">Live Field Gallery</h1>
+        <p class="page-hero-desc">Curated photo records from campus tables, downtown outreach, and fellowship dinners in Bryan & College Station.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 28px;">
+      <div class="container">
+        <div class="gallery-app-wrapper">
+          
+          <!-- Cosmos / Linear-Grade Disciplined Editorial Toolbar (1-Line Unified) -->
+          <div class="gallery-toolbar">
+            
+            <!-- Left: Segmented Minimal Filter Track -->
+            <div class="gallery-segmented-track">
+              <button class="gallery-tab-btn active" data-tag="all">All (<span id="photoTotalCount">12</span>)</button>
+              <button class="gallery-tab-btn" data-tag="bibles">Bibles</button>
+              <button class="gallery-tab-btn" data-tag="campus">Campus</button>
+              <button class="gallery-tab-btn" data-tag="outreach">Outreach</button>
+              <button class="gallery-tab-btn" data-tag="community">Community</button>
+              <button class="gallery-tab-btn" data-tag="worship">Worship</button>
+            </div>
+
+            <!-- Right: Sleek Upload Action Button (Protected: Staff only) -->
+            <div class="gallery-action-group">
+              <button class="btn btn-forest btn-gallery-upload btn-open-upload" style="display: none;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Cosmos / Savee 3-Column Curated Grid -->
+          <div class="gallery-grid" id="purePhotoGrid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Clean Photo Lightbox Modal -->
+  <div class="modal-backdrop" id="photoLightboxModal">
+    <div class="photo-lightbox-modal">
+      <div class="lightbox-media">
+        <img id="lightboxImg" src="" alt="" />
+      </div>
+      <div class="lightbox-details">
+        <div>
+          <div class="lightbox-caption" id="lightboxCaption"></div>
+          <div class="lightbox-meta" id="lightboxMeta"></div>
+        </div>
+        <button class="btn btn-outline" id="closeLightboxBtn" style="padding: 6px 16px;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direct Photo Upload Modal -->
+  <div class="modal-backdrop" id="photoUploadModal">
+    <div class="upload-modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-camera"></i> Staff Photo Uploader</div>
+        <button class="modal-close-btn" id="closeUploadBtn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="upload-body-grid">
+        <!-- Left Media Column: Dropzone or Preview -->
+        <div class="upload-media-col">
+          <!-- Dropzone (Shown Initially) -->
+          <div class="upload-dropzone" id="galleryDropzone">
+            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+            <h4>Drag &amp; drop photo here</h4>
+            <p>Supports JPG, PNG, WEBP (High Resolution)</p>
+            <button class="btn btn-forest" type="button" id="btnBrowseGalleryFile">
+              <i class="fa-solid fa-folder-open"></i> Browse File
+            </button>
+            <input type="file" id="galleryFileInput" style="display: none;" accept="image/*" />
+          </div>
+
+          <!-- Preview & Filter Area (Hidden until image selected) -->
+          <div class="upload-preview-area" id="galleryPreviewArea" style="display: none;">
+            <div class="preview-img-wrap">
+              <img id="galleryPreviewImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="" class="filter-normal" />
+            </div>
+
+            <div class="filter-section-title">Color Filter</div>
+            <div class="filter-palette-bar">
+              <div class="filter-thumb-btn active" data-filter="filter-normal">
+                <div class="filter-thumb-box"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FAF7F2'/%3E%3C/svg%3E" alt="" class="filter-normal" /></div>
+                <span class="filter-name">Normal</span>
+              </div>
+              <div class="filter-thumb-btn" data-filter="filter-clarendon">
+                <div class="filter-thumb-box"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FAF7F2'/%3E%3C/svg%3E" alt="" class="filter-clarendon" /></div>
+                <span class="filter-name">Clarendon</span>
+              </div>
+              <div class="filter-thumb-btn" data-filter="filter-juno">
+                <div class="filter-thumb-box"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FAF7F2'/%3E%3C/svg%3E" alt="" class="filter-juno" /></div>
+                <span class="filter-name">Juno</span>
+              </div>
+              <div class="filter-thumb-btn" data-filter="filter-warm">
+                <div class="filter-thumb-box"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FAF7F2'/%3E%3C/svg%3E" alt="" class="filter-warm" /></div>
+                <span class="filter-name">Warm</span>
+              </div>
+              <div class="filter-thumb-btn" data-filter="filter-vintage">
+                <div class="filter-thumb-box"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FAF7F2'/%3E%3C/svg%3E" alt="" class="filter-vintage" /></div>
+                <span class="filter-name">Vintage</span>
+              </div>
+              <div class="filter-thumb-btn" data-filter="filter-bw">
+                <div class="filter-thumb-box"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FAF7F2'/%3E%3C/svg%3E" alt="" class="filter-bw" /></div>
+                <span class="filter-name">B&amp;W</span>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-outline btn-change-photo" id="resetUploadBtn">
+              <i class="fa-solid fa-rotate-left"></i> Change Photo
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Form Column: Metadata -->
+        <div class="upload-form-side">
+          <div class="form-group">
+            <label class="form-label" for="galleryCaption">Photo Description / Story</label>
+            <textarea id="galleryCaption" class="form-textarea" placeholder="What happened in this moment? (e.g. Welcome dinner with visiting international scholars)" style="min-height: 96px;"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="galleryTag">Ministry Tag</label>
+            <select id="galleryTag" class="form-input">
+              <option value="bibles">#Bibles (Bible Distribution)</option>
+              <option value="campus">#Campus (Student Ministry)</option>
+              <option value="outreach">#Outreach (Downtown / Events)</option>
+              <option value="community">#Community (Fellowship)</option>
+              <option value="worship">#Worship (Prayer &amp; Praise)</option>
+            </select>
+          </div>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="galleryDate">Date Taken</label>
+              <input type="date" id="galleryDate" class="form-input" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="galleryLocation">Location</label>
+              <input type="text" id="galleryLocation" class="form-input" placeholder="e.g. Bryan, TX or Texas A&M" value="Bryan, Texas" />
+            </div>
+          </div>
+
+          <div class="modal-action-bar">
+            <button class="btn btn-primary" id="submitGalleryBtn" type="button" style="width: 100%; padding: 13px; font-size: 0.95rem;">
+              <i class="fa-solid fa-upload"></i> Publish to Archive
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin RBAC Permission Management Modal -->
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Tree of Life Global Missions</h3>
+          <p>Reaching international students in their native languages with the transforming love of Jesus Christ.</p>
+        </div>
+        <div>
+          <div class="footer-heading">Navigation</div>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="ministries.html">Ministries</a></li>
+            <li><a href="team.html">Meet the Team</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Action</div>
+          <ul class="footer-links">
+            <li><a href="gallery.html">Photo Gallery</a></li>
+            <li><a href="giving.html">How to Give</a></li>
+            <li><a href="events.html">Join the Team</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Headquarters</div>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.88rem;">2305 Barak Ln, Bryan, TX 77802</p>
+          <p style="color: var(--color-amber); font-size: 0.88rem; margin-top: 6px;">info@treeoflifemissions.org</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Tree of Life Global Missions. All Rights Reserved.</div>
+        <div>Bryan, Texas • 501(c)(3) Non-Profit</div>
+      </div>
+    </div>
+  </footer>
+
+    <!-- Supabase Cloud & DB Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=3.0"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin-settings.js"></script>
+  <script src="js/instagram.js?v=3.0"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Announcements &amp; Bulletins — Tree of Life Global Missions</title>
+  <link rel="icon" type="image/png" href="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <!-- Social Media & OpenGraph Metadata (KakaoTalk / iMessage / Instagram / Facebook) -->
+  <meta name="description" content="Official bulletins, urgent prayer requests, campus outreach logistics, and field updates from Tree of Life Global Missions." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tree of Life Global Missions" />
+  <meta property="og:title" content="Ministry Announcements & Bulletins — Tree of Life Global Missions" />
+  <meta property="og:description" content="Official bulletins, urgent prayer requests, campus outreach logistics, and field updates from Tree of Life Global Missions." />
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ministry Announcements & Bulletins — Tree of Life Global Missions" />
+  <meta name="twitter:description" content="Official bulletins, urgent prayer requests, campus outreach logistics, and field updates from Tree of Life Global Missions." />
+  <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+
+  
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/instagram-gallery.css" />
+
+  <style>
+    /* Announcements Specialized Layout */
+    .announcements-ops-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--color-sand-border);
+      flex-wrap: wrap;
+    }
+
+    .notice-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-sand-border);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      position: relative;
+    }
+
+    .notice-card:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .notice-card.pinned {
+      border: 1.5px solid var(--color-amber);
+      background: linear-gradient(180deg, #FFFFFF 0%, rgba(201, 102, 35, 0.02) 100%);
+    }
+
+    .notice-top-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .notice-tag-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notice-badge-pinned {
+      background: var(--color-amber);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 850;
+      padding: 3px 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      letter-spacing: 0.04em;
+    }
+
+    .notice-badge-category {
+      background: var(--color-forest-subtle);
+      color: var(--color-forest);
+      border: 1px solid var(--color-forest-border);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .notice-author-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 750;
+      color: var(--color-forest);
+      background: var(--color-sand-surface);
+      border: 1px solid var(--color-sand-border);
+      padding: 3px 10px;
+      border-radius: 9999px;
+    }
+
+    .notice-title {
+      font-size: 1.35rem;
+      font-weight: 850;
+      color: var(--color-forest);
+      margin-bottom: 14px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    .notice-content {
+      color: var(--color-text-main);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    .notice-image-frame {
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      max-height: 440px;
+      border: 1px solid var(--color-sand-border);
+      background: var(--color-sand-bg);
+      cursor: pointer;
+    }
+
+    .notice-image-frame img {
+      width: 100%;
+      height: 100%;
+      max-height: 440px;
+      object-fit: cover;
+      display: block;
+      transition: transform var(--transition-normal);
+    }
+
+    .notice-image-frame:hover img {
+      transform: scale(1.01);
+    }
+
+    .notice-footer-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px dashed var(--color-sand-border);
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .notice-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-notice-action {
+      background: none;
+      border: 1px solid var(--color-sand-border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      transition: all var(--transition-fast);
+    }
+
+    .btn-notice-action:hover {
+      background: var(--color-sand-surface);
+      color: var(--color-forest);
+    }
+
+    .btn-notice-delete:hover {
+      background: #FEE2E2;
+      color: #DC2626;
+      border-color: #FCA5A5;
+    }
+
+    @media (max-width: 767px) {
+      .announcements-ops-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .notice-card {
+        padding: 20px 16px;
+      }
+      .notice-title {
+        font-size: 1.15rem;
+      }
+      .notice-top-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo">
+        <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" alt="Tree of Life Logo" class="brand-logo-img" />
+        <div class="brand-name-group">
+          <span class="brand-title">Tree of Life</span>
+          <span class="brand-subtitle">Global Missions</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="ministries.html" class="nav-link">Ministries</a></li>
+          <li><a href="watch.html" class="nav-link">Watch</a></li>
+          <li><a href="team.html" class="nav-link">Team</a></li>
+          <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li><a href="announcements.html" class="nav-link active">Announcements</a></li>
+          <li><a href="giving.html" class="nav-link">Giving</a></li>
+          <li><a href="events.html" class="nav-link">Schedule</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <div id="globalAuthContainer" class="global-auth-slot"></div>
+        <a href="giving.html" class="btn btn-primary">
+          <i class="fa-solid fa-heart"></i> Give Now
+        </a>
+        <button class="apple-hamburger-btn" id="appleHamburgerBtn" aria-label="Toggle Navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="section-tag">Official Bulletins</span>
+        <h1 class="page-hero-title">Ministry Announcements &amp; Updates</h1>
+        <p class="page-hero-desc">Stay informed on upcoming campus outreaches, prayer requests, urgent schedule changes, and field briefings from the leadership team.</p>
+      </div>
+    </section>
+
+    <!-- Main Announcements Console -->
+    <section class="section" style="padding-top: 28px;">
+      <div class="container" style="max-width: 900px;">
+
+        <!-- Operations & Filter Header -->
+        <div class="announcements-ops-header">
+          <!-- Left: Categories Track -->
+          <div class="events-segmented-track" id="announcementFilterTrack" style="margin: 0;">
+            <button class="event-filter-btn active" data-category="all">All Bulletins</button>
+            <button class="event-filter-btn" data-category="urgent">Urgent &amp; Prayer</button>
+            <button class="event-filter-btn" data-category="outreach">Outreach Briefings</button>
+            <button class="event-filter-btn" data-category="campus">Campus Tables</button>
+            <button class="event-filter-btn" data-category="fellowship">Fellowship</button>
+          </div>
+
+          <!-- Right: Post Button (Protected: Staff only) -->
+          <div class="events-action-group" style="border: none; padding: 0; width: auto;">
+            <button class="btn btn-forest" id="btnOpenPostNotice" style="display: none;">
+              <i class="fa-solid fa-plus"></i> Post Notice
+            </button>
+          </div>
+        </div>
+
+        <!-- Announcements List Container -->
+        <div id="announcementsListContainer">
+          <!-- Rendered dynamically by js/announcements.js -->
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Post New Announcement (Admin/Staff Only) -->
+  <div class="modal-backdrop" id="postNoticeModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="section-tag">Staff Console</span>
+          <h3 class="modal-title">Publish Ministry Announcement</h3>
+        </div>
+        <button class="modal-close-btn" id="closePostNoticeBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form id="postNoticeForm">
+          <div class="form-group">
+            <label class="form-label" for="noticeTitle">Bulletin Title</label>
+            <input type="text" id="noticeTitle" class="form-input" placeholder="e.g. Texas A&M MSC Plaza Outreach Location Update" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div>
+              <label class="form-label" for="noticeCategory">Category</label>
+              <select id="noticeCategory" class="form-input">
+                <option value="urgent">Urgent &amp; Prayer</option>
+                <option value="outreach">Outreach Briefing</option>
+                <option value="campus">Campus Notice</option>
+                <option value="fellowship">Table Fellowship</option>
+                <option value="general">General Ministry</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="noticeDate">Date</label>
+              <input type="date" id="noticeDate" class="form-input" required />
+            </div>
+          </div>
+
+          <!-- Pinned / Urgent Toggle -->
+          <div style="background: var(--color-sand-bg); padding: 12px 16px; border-radius: 6px; border: 1px solid var(--color-sand-border); display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div>
+              <div style="font-weight: 800; font-size: 0.85rem; color: var(--color-forest);">
+                <i class="fa-solid fa-thumbtack" style="color: var(--color-amber);"></i> Pin to Top (Urgent Bulletin)
+              </div>
+              <div style="font-size: 0.74rem; color: var(--color-text-muted);">
+                Highlight with high-priority amber border at the top of the announcement board.
+              </div>
+            </div>
+            <input type="checkbox" id="noticePinned" style="width: 18px; height: 18px; accent-color: var(--color-amber);" />
+          </div>
+
+          <!-- Content Body -->
+          <div class="form-group">
+            <label class="form-label" for="noticeContent">Announcement Details</label>
+            <textarea id="noticeContent" class="form-textarea" placeholder="Write full briefing, logistics, prayer points, or schedule instructions..." style="min-height: 140px;" required></textarea>
+          </div>
+
+          <!-- Image Attachment Section -->
+          <div class="form-group">
+            <label class="form-label">Attach Image (Optional)</label>
+            
+            <div id="noticeDropzone" style="border: 2px dashed var(--color-sand-border); background: var(--color-sand-bg); padding: 20px; border-radius: 6px; text-align: center; cursor: pointer; transition: all var(--transition-fast);">
+              <i class="fa-regular fa-image" style="font-size: 1.8rem; color: var(--color-forest); margin-bottom: 6px; display: block;"></i>
+              <span style="font-size: 0.82rem; font-weight: 700; color: var(--color-forest);">Click or drag &amp; drop an image here</span>
+              <div style="font-size: 0.72rem; color: var(--color-text-muted); margin-top: 4px;">PNG, JPG, JPEG up to 10MB</div>
+            </div>
+            <input type="file" id="noticeFileInput" accept="image/*" style="display: none;" />
+
+            <!-- Image Preview Box -->
+            <div id="noticePreviewArea" style="display: none; margin-top: 10px; position: relative; border-radius: 6px; overflow: hidden; max-height: 220px; border: 1px solid var(--color-sand-border);">
+              <img id="noticePreviewImg" src="" alt="Notice attachment preview" style="width: 100%; height: 220px; object-fit: cover;" />
+              <button type="button" id="btnRemoveNoticeImg" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer;">
+                <i class="fa-solid fa-xmark"></i> Remove
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+            <button type="button" class="btn btn-outline" id="btnCancelNotice">Cancel</button>
+            <button type="submit" class="btn btn-forest">
+              <i class="fa-solid fa-bullhorn"></i> Publish Announcement
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal for Notice Images -->
+  <div class="modal-backdrop" id="noticeImageLightbox">
+    <div style="max-width: 800px; width: 100%; background: #000; border-radius: 8px; overflow: hidden; position: relative;">
+      <button id="closeNoticeLightboxBtn" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 1.2rem; cursor: pointer; z-index: 10;">
+        &times;
+      </button>
+      <img id="noticeLightboxImg" src="" alt="Full view" style="width: 100%; max-height: 80vh; object-fit: contain; display: block;" />
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="footer-brand">
+            <span class="brand-title">Tree of Life</span>
+            <span class="brand-subtitle">Global Missions</span>
+          </div>
+          <p class="footer-desc">
+            Reaching international students, university scholars, and local communities with the living Word of God in their native languages.
+          </p>
+          <div class="footer-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>501(c)(3) Non-Profit Public Charity</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Our Ministry</a></li>
+            <li><a href="ministries.html">Four Core Pillars</a></li>
+            <li><a href="watch.html">Watch Online</a></li>
+            <li><a href="team.html">Meet the Team</a></li>
+            <li><a href="gallery.html">Ministry Photo Archive</a></li>
+            <li><a href="announcements.html">Official Bulletins</a></li>
+            <li><a href="giving.html">How to Give (Tax Exempt)</a></li>
+            <li><a href="events.html">Schedule &amp; Join</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">Headquarters &amp; Field Hub</h4>
+          <ul class="footer-contact-list">
+            <li>
+              <i class="fa-solid fa-location-dot"></i>
+              <span>2305 Barak Ln, Bryan, TX 77802</span>
+            </li>
+            <li>
+              <i class="fa-solid fa-envelope"></i>
+              <a href="mailto:info@treeoflifemissions.org">info@treeoflifemissions.org</a>
+            </li>
+            <li>
+              <i class="fa-solid fa-phone"></i>
+              <a href="tel:+19795550100">+1 (979) 555-0100</a>
+            </li>
+            <li>
+              <i class="fa-solid fa-clock"></i>
+              <span>Mon-Fri: 9:00 AM - 5:00 PM CST</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Tree of Life Global Missions. All rights reserved. Donations are tax-deductible under IRS section 501(c)(3).</p>
+        <p>Built with devotion for global outreach.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+    <!-- Supabase Cloud & DB Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin-settings.js"></script>
+  <script src="js/announcements.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+

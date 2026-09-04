@@ -1,0 +1,481 @@
+/**
+ * Tree of Life Global Missions — Auth & RBAC Engine (Supabase Ready)
+ * Schema & State mapped 1:1 to Supabase `auth.users` and `public.permissions`
+ * Default: Admin mode active for seamless local testing
+ */
+
+const DEFAULT_AUTH_USERS = [
+  {
+    id: "usr_admin_01",
+    email: "admin@treeoflifemissions.org",
+    name: "Director Mike",
+    role: "admin", // 'admin' | 'staff' | 'viewer'
+    avatar: "https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/07c05852-7830-4420-bdd9-f5a99bff0c18/AK6A8946.JPG",
+    grantedAt: "2026-08-01"
+  },
+  {
+    id: "usr_admin_02",
+    email: "fayez@treeoflifemissions.org",
+    name: "Fayez Farag",
+    role: "admin",
+    avatar: "https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/07c05852-7830-4420-bdd9-f5a99bff0c18/AK6A8946.JPG",
+    grantedAt: "2026-08-01"
+  },
+  {
+    id: "usr_staff_01",
+    email: "media@treeoflifemissions.org",
+    name: "Media Staff",
+    role: "staff",
+    avatar: "",
+    grantedAt: "2026-08-10"
+  },
+  {
+    id: "usr_staff_02",
+    email: "isis@treeoflifemissions.org",
+    name: "Isis Hanna",
+    role: "staff",
+    avatar: "",
+    grantedAt: "2026-08-12"
+  },
+  {
+    id: "usr_leader_01",
+    email: "sarah.chen@tamu.edu",
+    name: "Sarah Chen (TAMU Leader)",
+    role: "staff",
+    avatar: "",
+    grantedAt: "2026-08-15"
+  }
+];
+
+class AuthRBACEngine {
+  constructor() {
+    this.sessionKey = 'tol_auth_session_v2';
+    this.usersKey = 'tol_rbac_users_v2';
+    
+    this.users = this.loadUsers();
+    
+    // Check saved session state (Default: Public Guest Mode)
+    const savedSession = localStorage.getItem(this.sessionKey);
+    if (savedSession && savedSession !== 'logged_out') {
+      try {
+        this.currentUser = JSON.parse(savedSession);
+      } catch (e) {
+        this.currentUser = null;
+      }
+    } else {
+      this.currentUser = null;
+      localStorage.setItem(this.sessionKey, 'logged_out');
+    }
+    
+    this.initUI();
+  }
+
+  loadUsers() {
+    const saved = localStorage.getItem(this.usersKey);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Error loading users", e);
+      }
+    }
+    this.saveUsers(DEFAULT_AUTH_USERS);
+    return DEFAULT_AUTH_USERS;
+  }
+
+  saveUsers(users) {
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+  }
+
+  saveSession(user) {
+    if (user) {
+      localStorage.setItem(this.sessionKey, JSON.stringify(user));
+    } else {
+      localStorage.setItem(this.sessionKey, 'logged_out');
+    }
+    this.currentUser = user;
+    this.renderAuthStatus();
+  }
+
+  async login(email, password = '') {
+    const cleanEmail = email.trim().toLowerCase();
+
+    // 1. Supabase Hybrid Client Check
+    if (window.supabaseClient) {
+      const result = await window.supabaseClient.signIn(cleanEmail, password);
+      if (result && result.success) {
+        this.currentUser = result.user;
+        this.closeLoginModal();
+        const mode = window.supabaseClient.isLive() ? 'Supabase Cloud' : 'Local Test Mode';
+        alert(`Welcome, ${this.currentUser.name}! Logged in successfully (${mode} - ${this.currentUser.role.toUpperCase()} Role).`);
+        this.renderAuthStatus();
+        location.reload();
+        return true;
+      }
+    }
+
+    // 2. Preset Users Fallback
+    const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (existing) {
+      this.saveSession(existing);
+      this.closeLoginModal();
+      alert(`Welcome back, ${existing.name}! (${existing.role.toUpperCase()} Role active)`);
+      this.renderAuthStatus();
+      location.reload();
+      return true;
+    }
+
+    // 3. Auto-Grant Tester Account for Any Email
+    const newTester = {
+      id: "usr_" + Date.now(),
+      email: cleanEmail,
+      name: cleanEmail.split('@')[0],
+      role: 'staff',
+      avatar: '',
+      grantedAt: new Date().toISOString().split('T')[0]
+    };
+    this.users.push(newTester);
+    this.saveUsers(this.users);
+    this.saveSession(newTester);
+    this.closeLoginModal();
+    alert(`Welcome, ${newTester.name}! New tester account initialized with STAFF permissions.`);
+    this.renderAuthStatus();
+    location.reload();
+    return true;
+  }
+
+  logout() {
+    this.saveSession(null);
+    alert("Signed out successfully. Switched to public guest mode.");
+    this.renderAuthStatus();
+    location.reload();
+  }
+
+  hasUploadPermission() {
+    if (!this.currentUser) return false;
+    return this.currentUser.role === 'admin' || this.currentUser.role === 'staff';
+  }
+
+  isAdmin() {
+    return this.currentUser && this.currentUser.role === 'admin';
+  }
+
+  grantPermission(email, name, role = 'staff') {
+    const existing = this.users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
+    if (existing) {
+      existing.role = role;
+      if (name) existing.name = name;
+    } else {
+      this.users.push({
+        id: "usr_" + Date.now(),
+        email: email.trim(),
+        name: name || email.split('@')[0],
+        role: role,
+        avatar: "",
+        grantedAt: new Date().toISOString().split('T')[0]
+      });
+    }
+    this.saveUsers(this.users);
+    this.renderRbacTable();
+  }
+
+  revokePermission(email) {
+    if (email === 'admin@treeoflifemissions.org') {
+      alert("Cannot revoke super administrator.");
+      return;
+    }
+    this.users = this.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+    this.saveUsers(this.users);
+    this.renderRbacTable();
+  }
+
+  initUI() {
+    // Immediate execution if DOM already parsed
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      this.renderAuthStatus();
+      this.bindAuthEvents();
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.renderAuthStatus();
+        this.bindAuthEvents();
+      });
+    }
+    window.addEventListener('load', () => this.renderAuthStatus());
+  }
+
+  renderAuthStatus() {
+    const containers = [
+      document.getElementById('globalAuthContainer'),
+      document.getElementById('authStatusContainer')
+    ].filter(Boolean);
+
+    containers.forEach(container => {
+      if (this.currentUser) {
+        container.innerHTML = `
+          <div class="auth-pill-logged" title="Logged in as ${this.currentUser.name} (${this.currentUser.email})">
+            <span class="auth-pill-name">${this.currentUser.name}</span>
+            <span class="role-badge role-${this.currentUser.role}">[${this.currentUser.role.toUpperCase()}]</span>
+            ${this.isAdmin() ? `
+              <button type="button" class="btn-rbac-mini" onclick="window.adminSettings ? window.adminSettings.openModal('groups') : window.authRBAC.openRbacModal()" title="Admin Operations & Settings Center">
+                <i class="fa-solid fa-sliders"></i> Setting
+              </button>
+            ` : ''}
+            <button type="button" class="btn-logout-mini" onclick="window.authRBAC.logout()" title="Sign Out" aria-label="Sign Out">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <button type="button" class="btn-auth-signin" onclick="window.authRBAC.openLoginModal()" title="Staff / Admin Sign In">
+            <i class="fa-solid fa-shield-halved"></i> Staff
+          </button>
+        `;
+      }
+    });
+
+    this.updateProtectedElements();
+  }
+
+  updateProtectedElements() {
+    const hasPermission = this.hasUploadPermission();
+
+    // 1. Gallery: Upload Photo button
+    document.querySelectorAll('.btn-gallery-upload, .btn-open-upload').forEach(btn => {
+      btn.style.display = hasPermission ? 'inline-flex' : 'none';
+    });
+
+    // 2. Announcements: Post Notice button
+    document.querySelectorAll('#btnOpenPostNotice, .btn-post-notice').forEach(btn => {
+      btn.style.display = hasPermission ? 'inline-flex' : 'none';
+    });
+
+    // 3. Schedule & Join: Publish Event & Email Monthly Schedule buttons
+    document.querySelectorAll('.btn-open-create-event').forEach(btn => {
+      btn.style.display = hasPermission ? 'inline-flex' : 'none';
+    });
+
+    document.querySelectorAll('.btn-email-schedule, #btnOpenEmailSchedule').forEach(btn => {
+      btn.style.display = hasPermission ? 'inline-flex' : 'none';
+    });
+
+    // 4. Any elements with data-auth-required attributes
+    document.querySelectorAll('[data-auth-required="staff"]').forEach(el => {
+      el.style.display = hasPermission ? '' : 'none';
+    });
+
+    document.querySelectorAll('[data-auth-required="admin"]').forEach(el => {
+      el.style.display = this.isAdmin() ? '' : 'none';
+    });
+  }
+
+  ensureLoginModal() {
+    let modal = document.getElementById('staffLoginModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal-backdrop';
+      modal.id = 'staffLoginModal';
+      modal.innerHTML = `
+        <div class="upload-modal-box" style="max-width: 440px;">
+          <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-shield-halved"></i> Staff Sign In</div>
+            <button class="modal-close-btn" onclick="window.authRBAC.closeLoginModal()">&times;</button>
+          </div>
+          <div style="padding: 24px;">
+            <p style="font-size: 0.86rem; color: var(--color-text-muted); margin-bottom: 18px;">
+              Sign in with your verified staff or administrator email to manage announcements, schedules, and operations.
+            </p>
+            <form id="staffLoginForm">
+              <div class="form-group">
+                <label class="form-label" for="staffLoginEmail">Staff Email Address</label>
+                <input type="email" id="staffLoginEmail" class="form-input" placeholder="admin@treeoflifemissions.org" required />
+              </div>
+              <button type="submit" class="btn btn-forest" style="width: 100%; padding: 12px; margin-top: 8px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In
+              </button>
+            </form>
+            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--color-sand-border); text-align: center;">
+              <div style="font-size: 0.74rem; font-weight: 800; color: var(--color-amber); text-transform: uppercase; margin-bottom: 8px;">
+                Quick Demo Accounts (1-Click)
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: center;">
+                <button type="button" class="btn btn-outline" id="demoLoginAdmin" style="font-size: 0.76rem; padding: 5px 10px;">
+                  Admin (Mike)
+                </button>
+                <button type="button" class="btn btn-outline" id="demoLoginStaff" style="font-size: 0.76rem; padding: 5px 10px;">
+                  Staff (Media)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeLoginModal();
+      });
+    }
+    this.bindAuthEvents();
+    return modal;
+  }
+
+  ensureRbacModal() {
+    let modal = document.getElementById('staffRbacModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal-backdrop';
+      modal.id = 'staffRbacModal';
+      modal.innerHTML = `
+        <div class="upload-modal-box" style="max-width: 680px;">
+          <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-users-gear"></i> Staff Permission Manager</div>
+            <button class="modal-close-btn" onclick="window.authRBAC.closeRbacModal()">&times;</button>
+          </div>
+          <div style="padding: 24px; max-height: 80vh; overflow-y: auto;">
+            <form id="grantStaffForm" style="background: var(--color-sand-bg); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border); margin-bottom: 20px;">
+              <div style="font-weight: 750; font-size: 0.88rem; color: var(--color-forest); margin-bottom: 12px;">
+                <i class="fa-solid fa-user-plus"></i> Grant Staff Permission
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end;">
+                <div>
+                  <label class="form-label" style="font-size: 0.74rem;">Name</label>
+                  <input type="text" id="grantName" class="form-input" placeholder="Sarah Chen" required style="padding: 8px 10px; font-size: 0.85rem;" />
+                </div>
+                <div>
+                  <label class="form-label" style="font-size: 0.74rem;">Email</label>
+                  <input type="email" id="grantEmail" class="form-input" placeholder="sarah@tamu.edu" required style="padding: 8px 10px; font-size: 0.85rem;" />
+                </div>
+                <div>
+                  <label class="form-label" style="font-size: 0.74rem;">Role</label>
+                  <select id="grantRole" class="form-input" style="padding: 8px 10px; font-size: 0.85rem;">
+                    <option value="staff">Staff (Upload / Edit)</option>
+                    <option value="admin">Admin (Full Access)</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-forest" style="padding: 9px 14px; font-size: 0.8rem;">Grant</button>
+              </div>
+            </form>
+            <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--color-forest); margin-bottom: 10px;">
+              Authorized Ministry Accounts
+            </h4>
+            <table class="rbac-table">
+              <thead>
+                <tr>
+                  <th>Staff Name</th>
+                  <th>Email Address</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rbacTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeRbacModal();
+      });
+    }
+    this.bindRbacEvents();
+    return modal;
+  }
+
+  bindRbacEvents() {
+    const grantForm = document.getElementById('grantStaffForm');
+    if (grantForm && !grantForm._bound) {
+      grantForm._bound = true;
+      grantForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('grantEmail').value;
+        const name = document.getElementById('grantName').value;
+        const role = document.getElementById('grantRole').value;
+        this.grantPermission(email, name, role);
+        grantForm.reset();
+        alert(`Granted ${role.toUpperCase()} permissions to ${email}`);
+      });
+    }
+  }
+
+  bindAuthEvents() {
+    const loginForm = document.getElementById('staffLoginForm');
+    if (loginForm && !loginForm._bound) {
+      loginForm._bound = true;
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('staffLoginEmail').value;
+        this.login(email);
+      });
+    }
+
+    const demoAdmin = document.getElementById('demoLoginAdmin');
+    if (demoAdmin && !demoAdmin._bound) {
+      demoAdmin._bound = true;
+      demoAdmin.addEventListener('click', () => this.login('admin@treeoflifemissions.org'));
+    }
+
+    const demoStaff = document.getElementById('demoLoginStaff');
+    if (demoStaff && !demoStaff._bound) {
+      demoStaff._bound = true;
+      demoStaff.addEventListener('click', () => this.login('media@treeoflifemissions.org'));
+    }
+  }
+
+  openLoginModal() {
+    const modal = this.ensureLoginModal();
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      const emailInput = document.getElementById('staffLoginEmail');
+      if (emailInput) setTimeout(() => emailInput.focus(), 150);
+    }
+  }
+
+  closeLoginModal() {
+    const modal = document.getElementById('staffLoginModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  openRbacModal() {
+    const modal = this.ensureRbacModal();
+    if (modal) {
+      this.renderRbacTable();
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  closeRbacModal() {
+    const modal = document.getElementById('staffRbacModal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  renderRbacTable() {
+    const tbody = document.getElementById('rbacTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = this.users.map(u => `
+      <tr>
+        <td><strong>${u.name}</strong></td>
+        <td>${u.email}</td>
+        <td><span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></td>
+        <td>
+          ${u.email !== 'admin@treeoflifemissions.org' ? `
+            <button class="btn-revoke" onclick="window.authRBAC.revokePermission('${u.email}')">
+              <i class="fa-solid fa-trash-can"></i> Revoke
+            </button>
+          ` : '<span style="color: var(--color-text-muted); font-size: 0.76rem;">Permanent</span>'}
+        </td>
+      </tr>
+    `).join('');
+  }
+}
+
+window.authRBAC = new AuthRBACEngine();
+

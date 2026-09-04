@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ministry Schedule & Operations — Tree of Life Global Missions</title>
+  <link rel="icon" type="image/png" href="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <!-- Social Media & OpenGraph Metadata (KakaoTalk / iMessage / Instagram / Facebook) -->
+  <meta name="description" content="View upcoming campus welcome tables, Thursday international student dinners, and prayer walks across Blinn and Texas A&M." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tree of Life Global Missions" />
+  <meta property="og:title" content="Ministry Schedule & Volunteer Opportunities — Tree of Life Global Missions" />
+  <meta property="og:description" content="View upcoming campus welcome tables, Thursday international student dinners, and prayer walks across Blinn and Texas A&M." />
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ministry Schedule & Volunteer Opportunities — Tree of Life Global Missions" />
+  <meta name="twitter:description" content="View upcoming campus welcome tables, Thursday international student dinners, and prayer walks across Blinn and Texas A&M." />
+  <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" />
+
+  
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/instagram-gallery.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo">
+        <img src="https://images.squarespace-cdn.com/content/v1/6712896c9007d056a83565af/762d2322-49ba-4f8e-b6ba-715fcc066af0/Tree+of+Life+logo.png" alt="Tree of Life Logo" class="brand-logo-img" />
+        <div class="brand-name-group">
+          <span class="brand-title">Tree of Life</span>
+          <span class="brand-subtitle">Global Missions</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="ministries.html" class="nav-link">Ministries</a></li>
+          <li><a href="watch.html" class="nav-link">Watch</a></li>
+          <li><a href="team.html" class="nav-link">Team</a></li>
+          <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li><a href="announcements.html" class="nav-link">Announcements</a></li>
+          <li><a href="giving.html" class="nav-link">Giving</a></li>
+          <li><a href="events.html" class="nav-link active">Schedule</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <div id="globalAuthContainer" class="global-auth-slot"></div>
+        <a href="giving.html" class="btn btn-primary">
+          <i class="fa-solid fa-heart"></i> Give Now
+        </a>
+        <button class="apple-hamburger-btn" id="appleHamburgerBtn" aria-label="Toggle Navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="section-tag">Field Logistics & Schedule</span>
+        <h1 class="page-hero-title">Ministry Schedule & Operations</h1>
+        <p class="page-hero-desc">Live schedules for campus Bible tables, downtown festival outreach, and fellowship dinners with Linear-grade status tracking.</p>
+      </div>
+    </section>
+
+    <!-- Ministry Events & Operations Console -->
+    <section class="section" style="padding-top: 28px;">
+      <div class="container">
+        
+        <!-- Disciplined Single-Line Ops Control Bar (Dynamic Segmented Track) -->
+        <div class="events-ops-header">
+          
+          <!-- Left: Segmented Filter Track (Injected dynamically by js/events.js) -->
+          <div class="events-segmented-track" id="categoryFilterTrack">
+            <!-- Rendered by js/events.js -->
+          </div>
+
+          <!-- Right: Email Schedule and Publish Button Cluster (Protected: Staff only) -->
+          <div class="events-action-group">
+            <div class="events-btn-cluster" style="display: flex; gap: 8px; width: 100%;">
+              <button class="btn btn-outline btn-email-schedule" id="btnOpenEmailSchedule" title="Email Monthly Schedule to Volunteers" style="display: none;">
+                <i class="fa-solid fa-envelope"></i> Email Monthly Schedule
+              </button>
+              <button class="btn btn-forest btn-open-create-event" style="display: none;">
+                <i class="fa-solid fa-plus"></i> Publish Event
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Apple Calendar Monthly Switcher (< Prev Month | October 2026 | Next Month >) -->
+        <div class="month-navigator-bar">
+          <div class="month-nav-controls">
+            <button type="button" class="btn-month-nav" id="btnPrevMonth" title="Previous Month" aria-label="Previous Month">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="current-month-badge">
+              <i class="fa-regular fa-calendar" style="color: var(--color-amber);"></i>
+              <span class="current-month-display" id="currentMonthDisplay">October 2026</span>
+            </div>
+            <button type="button" class="btn-month-nav" id="btnNextMonth" title="Next Month" aria-label="Next Month">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="month-quick-filters">
+            <button type="button" class="btn-month-pill active" id="btnViewThisMonth">Monthly View</button>
+            <button type="button" class="btn-month-pill" id="btnViewAllMonths">All Operations</button>
+          </div>
+        </div>
+
+        <!-- Events List Container -->
+        <div class="events-list-wrapper" id="eventsListContainer">
+          <!-- Rendered by js/events.js -->
+        </div>
+
+        <!-- Volunteer Signup Strip -->
+        <div class="volunteer-signup-box" style="margin-top: 56px; background: var(--color-white); border-radius: var(--radius-lg); padding: 40px; border: 1px solid var(--color-sand-border); box-shadow: var(--shadow-sm); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+          <div>
+            <span class="section-tag">Volunteer With Us</span>
+            <h3 style="font-size: 1.8rem; font-weight: 800; color: var(--color-forest); margin-bottom: 12px;">
+              Want to Join an Upcoming Field Team?
+            </h3>
+            <p style="color: var(--color-text-muted); line-height: 1.7; font-size: 0.95rem; margin-bottom: 20px;">
+              Whether you want to help set up Bible tables at Texas A&M, cook a meal for international freshmen, or join our prayer walk team, there is a place for you.
+            </p>
+            <div style="display: flex; gap: 14px; color: var(--color-forest); font-weight: 700; font-size: 0.9rem;">
+              <div><i class="fa-solid fa-check" style="color: var(--color-amber);"></i> No Experience Needed</div>
+              <div><i class="fa-solid fa-check" style="color: var(--color-amber);"></i> Cross-Cultural Training Provided</div>
+            </div>
+          </div>
+
+          <div>
+            <form id="volunteerForm" style="display: flex; flex-direction: column; gap: 12px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <input type="text" class="form-input" placeholder="Your Full Name" required />
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <input type="email" class="form-input" placeholder="Your Email Address" required />
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <select class="form-input" id="volunteerMinistrySelect">
+                  <option value="tamu">Texas A&M Campus Bible Table Team</option>
+                  <option value="downtown">Downtown First Friday Outreach</option>
+                  <option value="meal">Thursday Fellowship Dinner Host</option>
+                  <option value="prayer">Prayer Intercessor</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" style="padding: 12px;">
+                <i class="fa-solid fa-hand-holding-heart"></i> Apply to Volunteer
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal 1: Create Event & Broadcast (RBAC Gated) -->
+  <div class="modal-backdrop" id="createEventModal">
+    <div class="upload-modal-box" style="max-width: 640px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-calendar-plus"></i> Publish Ministry Event</div>
+        <button class="modal-close-btn" id="closeCreateEventBtn">&times;</button>
+      </div>
+
+      <div style="padding: 24px; max-height: 80vh; overflow-y: auto;">
+        <form id="createEventForm">
+          <div class="form-group">
+            <label class="form-label" for="evtTitle">Outreach Title</label>
+            <input type="text" id="evtTitle" class="form-input" placeholder="e.g. Texas A&M Campus Bible Distribution" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="evtDate">Event Date</label>
+              <input type="date" id="evtDate" class="form-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="evtTime">Time Window</label>
+              <input type="text" id="evtTime" class="form-input" placeholder="e.g. 10:00 AM - 3:00 PM" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="evtCampus">University / Campus</label>
+              <input type="text" id="evtCampus" class="form-input" placeholder="e.g. Texas A&M University" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="evtCategory">Category</label>
+              <select id="evtCategory" class="form-input">
+                <!-- Dynamically populated from active categories -->
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="evtLocation">Exact Location / Room / Table Spot</label>
+            <input type="text" id="evtLocation" class="form-input" placeholder="e.g. MSC Plaza Table 4, College Station, TX" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="evtDesc">Event Details / Scripture Focus</label>
+            <textarea id="evtDesc" class="form-textarea" placeholder="Describe the focus of this outreach..." required></textarea>
+          </div>
+
+          <!-- Leader & Permit Setup -->
+          <div style="background: var(--color-sand-bg); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border); margin-bottom: 16px;">
+            <h4 style="font-size: 0.88rem; font-weight: 800; color: var(--color-forest); margin-bottom: 10px;">
+              <i class="fa-solid fa-building-columns" style="color: var(--color-amber);"></i> University Venue Permit & Leader Assignment
+            </h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label class="form-label" style="font-size: 0.76rem;">Campus Leader Name</label>
+                <input type="text" id="evtLeaderName" class="form-input" placeholder="Sarah Chen" />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.76rem;">Leader Phone (for SMS)</label>
+                <input type="text" id="evtLeaderPhone" class="form-input" placeholder="+1-979-555-0142" />
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
+              <div>
+                <label class="form-label" style="font-size: 0.76rem;">Leader Email</label>
+                <input type="email" id="evtLeaderEmail" class="form-input" placeholder="leader@tamu.edu" />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.76rem;">Initial Permit Status</label>
+                <select id="evtPermitStatus" class="form-input">
+                  <option value="pending">Pending Application</option>
+                  <option value="submitted">Application Submitted</option>
+                  <option value="approved">Campus Approved</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Blast Toggle -->
+          <div style="background: var(--color-gold-light); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid rgba(201,102,35,0.25); display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <div>
+              <div style="font-weight: 800; font-size: 0.88rem; color: var(--color-forest);">
+                <i class="fa-solid fa-bullhorn" style="color: var(--color-amber);"></i> Broadcast Email Announcement
+              </div>
+              <div style="font-size: 0.76rem; color: var(--color-text-muted);">
+                Instantly notify registered team members, volunteers, and donors (Supabase Edge / Resend).
+              </div>
+            </div>
+            <label style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.88rem; cursor: pointer;">
+              <input type="checkbox" id="evtSendEmail" checked style="width: 18px; height: 18px; accent-color: var(--color-amber);" />
+              Send Email
+            </label>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-outline" onclick="window.eventsEngine.closeCreateModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-paper-plane"></i> Publish & Dispatch
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add New Ministry Category (Linear-Grade Modal) -->
+  <div class="modal-backdrop" id="addCategoryModal">
+    <div class="upload-modal-box" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-folder-plus"></i> Add Ministry Category</div>
+        <button class="modal-close-btn" id="closeAddCategoryBtn">&times;</button>
+      </div>
+      <div style="padding: 24px;">
+        <p style="font-size: 0.86rem; color: var(--color-text-muted); margin-bottom: 18px;">
+          Create a new outreach track (e.g. Airport Welcome, ESL Classes, Prayer Walk).
+        </p>
+        <form id="addCategoryForm">
+          <div class="form-group">
+            <label class="form-label" for="newCategoryName">Category Display Name</label>
+            <input type="text" id="newCategoryName" class="form-input" placeholder="e.g. Airport Welcome Team" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newCategoryKey">Identifier (Slug)</label>
+            <input type="text" id="newCategoryKey" class="form-input" placeholder="e.g. airport" required />
+          </div>
+
+          <!-- Existing Categories List with Delete Option -->
+          <div style="margin-top: 18px; border-top: 1px dashed var(--color-sand-border); padding-top: 14px;">
+            <div style="font-size: 0.74rem; font-weight: 800; color: var(--color-forest); text-transform: uppercase; margin-bottom: 8px;">
+              Active Categories
+            </div>
+            <div id="existingCategoriesList" style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto;">
+              <!-- Rendered by js/events.js -->
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-outline" onclick="window.eventsEngine.closeCategoryModal()">Cancel</button>
+            <button type="submit" class="btn btn-forest">
+              <i class="fa-solid fa-plus"></i> Add Category
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: 1-Click SMS Check-in Dispatch to Campus Leader -->
+  <div class="modal-backdrop" id="smsDispatchModal">
+    <div class="upload-modal-box" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-comment-sms"></i> Campus Leader SMS Check-in</div>
+        <button class="modal-close-btn" id="closeSmsModalBtn">&times;</button>
+      </div>
+
+      <div style="padding: 24px;">
+        <div style="background: var(--color-sand-bg); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border); margin-bottom: 16px;">
+          <div style="font-size: 0.8rem; color: var(--color-text-muted);">Outreach Target:</div>
+          <strong id="smsEventTitle" style="color: var(--color-forest); font-size: 0.95rem;"></strong>
+          <div style="margin-top: 6px; font-size: 0.84rem; display: flex; justify-content: space-between;">
+            <span>Leader: <strong id="smsLeaderName"></strong></span>
+            <span>Phone: <strong id="smsLeaderPhone" style="color: var(--color-amber);"></strong></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="smsMessageText">Generated SMS Message</label>
+          <textarea id="smsMessageText" class="form-textarea" style="min-height: 110px; font-size: 0.88rem;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <button id="btnExecuteSms" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 0.92rem; justify-content: center;">
+            <i class="fa-solid fa-mobile-screen"></i> Send via Device SMS
+          </button>
+        </div>
+
+        <!-- SMS History Log -->
+        <div>
+          <h4 style="font-size: 0.86rem; font-weight: 800; color: var(--color-forest); margin-bottom: 8px;">
+            <i class="fa-solid fa-clock-rotate-left"></i> SMS Dispatch History
+          </h4>
+          <div id="smsHistoryList" style="max-height: 160px; overflow-y: auto;">
+            <!-- Rendered by events.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <!-- Email Monthly Ministry Schedule Modal -->
+  <div class="modal-backdrop" id="emailScheduleModal">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="section-tag">Direct Email Dispatch</span>
+          <h3 class="modal-title">Email Monthly Ministry Schedule</h3>
+        </div>
+        <button class="modal-close-btn" id="closeEmailScheduleBtn" aria-label="Close modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 24px;">
+        <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 18px;">
+          Send the complete 30-day ministry operations calendar and volunteer rosters directly to your inbox or broadcast to the entire leadership team.
+        </p>
+
+        <!-- Send Direct to Multi-Recipients Form -->
+        <form id="emailScheduleForm" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="recipientScheduleEmail" class="form-input" placeholder="Enter emails separated by comma (e.g. mike@tamu.edu, sarah@gmail.com)" required style="flex: 1;" />
+            <button type="submit" class="btn btn-forest" style="white-space: nowrap; padding: 10px 18px;">
+              <i class="fa-solid fa-paper-plane"></i> Send Schedule
+            </button>
+          </div>
+
+          <!-- Quick Fill Recipient Chips & Admin Email Groups -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+              <span style="font-size: 0.72rem; color: var(--color-text-muted); font-weight: 700;">1-Click Add:</span>
+              <button type="button" class="btn-quick-recipient" id="btnQuickAddLeaders" style="background: var(--color-sand-surface); border: 1px solid var(--color-sand-border); border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; font-weight: 700; color: var(--color-forest); cursor: pointer;">
+                <i class="fa-solid fa-users"></i> All Field Leaders
+              </button>
+              <button type="button" class="btn-quick-recipient" id="btnQuickAddStaff" style="background: var(--color-sand-surface); border: 1px solid var(--color-sand-border); border-radius: 4px; padding: 2px 8px; font-size: 0.72rem; font-weight: 700; color: var(--color-forest); cursor: pointer;">
+                <i class="fa-solid fa-shield-check"></i> Ministry Staff
+              </button>
+            </div>
+            <!-- Dynamic Admin Email Groups Container -->
+            <div id="emailGroupButtonsContainer"></div>
+          </div>
+        </form>
+
+        <!-- Formatted Schedule Preview Box -->
+        <div style="background: var(--color-sand-bg); border: 1px solid var(--color-sand-border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 0.74rem; font-weight: 800; color: var(--color-amber); text-transform: uppercase;">
+              Formatted Email Briefing Preview
+            </span>
+            <button type="button" class="btn btn-outline" id="btnCopyScheduleText" style="font-size: 0.72rem; padding: 3px 8px;">
+              <i class="fa-regular fa-copy"></i> Copy Text
+            </button>
+          </div>
+          <textarea id="scheduleEmailPreviewText" readonly style="width: 100%; height: 180px; font-family: monospace; font-size: 0.8rem; background: #FFFFFF; border: 1px solid var(--color-sand-border); border-radius: 4px; padding: 10px; resize: none; color: var(--color-text-main); line-height: 1.5;"></textarea>
+        </div>
+
+        <!-- Quick 1-Click Action Buttons -->
+        <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" id="btnLaunchMailtoApp" style="font-size: 0.82rem;">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Default Mail App
+          </button>
+          <button type="button" class="btn btn-primary" id="btnDoneEmailSchedule" style="font-size: 0.82rem;">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Tree of Life Global Missions</h3>
+          <p>Reaching international students in their native languages with the transforming love of Jesus Christ.</p>
+        </div>
+        <div>
+          <div class="footer-heading">Navigation</div>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="ministries.html">Ministries</a></li>
+            <li><a href="watch.html">Watch Online</a></li>
+            <li><a href="team.html">Meet the Team</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Action</div>
+          <ul class="footer-links">
+            <li><a href="gallery.html">Photo Gallery</a></li>
+            <li><a href="giving.html">How to Give</a></li>
+            <li><a href="events.html">Schedule & Join</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Headquarters</div>
+          <p style="color: rgba(255,255,255,0.7); font-size: 0.88rem;">2305 Barak Ln, Bryan, TX 77802</p>
+          <p style="color: var(--color-amber); font-size: 0.88rem; margin-top: 6px;">info@treeoflifemissions.org</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Tree of Life Global Missions. All Rights Reserved.</div>
+        <div>Bryan, Texas • 501(c)(3) Non-Profit</div>
+      </div>
+    </div>
+  </footer>
+
+    <!-- Supabase Cloud & DB Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin-settings.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
