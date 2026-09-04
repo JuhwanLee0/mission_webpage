@@ -58,9 +58,22 @@ class AuthRBACEngine {
     const savedSession = localStorage.getItem(this.sessionKey);
     if (savedSession && savedSession !== 'logged_out') {
       try {
-        this.currentUser = JSON.parse(savedSession);
+        const parsed = JSON.parse(savedSession);
+        // Clean out any rogue/test sessions like 111@gmail.com
+        const isAuthorized = parsed && parsed.email && (
+          this.users.some(u => u.email.toLowerCase() === parsed.email.toLowerCase()) ||
+          parsed.provider === 'supabase'
+        ) && !parsed.email.includes('111@');
+
+        if (isAuthorized) {
+          this.currentUser = parsed;
+        } else {
+          this.currentUser = null;
+          localStorage.setItem(this.sessionKey, 'logged_out');
+        }
       } catch (e) {
         this.currentUser = null;
+        localStorage.setItem(this.sessionKey, 'logged_out');
       }
     } else {
       this.currentUser = null;
@@ -100,48 +113,38 @@ class AuthRBACEngine {
   async login(email, password = '') {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Supabase Hybrid Client Check
+    // 1. Supabase Hybrid Client Check (Queries Supabase staff_users whitelist)
     if (window.supabaseClient) {
       const result = await window.supabaseClient.signIn(cleanEmail, password);
       if (result && result.success) {
         this.currentUser = result.user;
         this.closeLoginModal();
-        const mode = window.supabaseClient.isLive() ? 'Supabase Cloud' : 'Local Test Mode';
-        alert(`Welcome, ${this.currentUser.name}! Logged in successfully (${mode} - ${this.currentUser.role.toUpperCase()} Role).`);
+        const mode = window.supabaseClient.isLive() ? 'Supabase Cloud' : 'Authorized Staff Mode';
+        alert(`Welcome, ${this.currentUser.name}!\n\nLogged in successfully (${mode} - ${this.currentUser.role.toUpperCase()} Role).`);
         this.renderAuthStatus();
         location.reload();
         return true;
+      } else if (result && result.error) {
+        // Explicit rejection
+        alert(result.error);
+        return false;
       }
     }
 
-    // 2. Preset Users Fallback
+    // 2. Preset Authorized Users Fallback
     const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
     if (existing) {
       this.saveSession(existing);
       this.closeLoginModal();
-      alert(`Welcome back, ${existing.name}! (${existing.role.toUpperCase()} Role active)`);
+      alert(`Welcome back, ${existing.name}!\n\n(${existing.role.toUpperCase()} Role active)`);
       this.renderAuthStatus();
       location.reload();
       return true;
     }
 
-    // 3. Auto-Grant Tester Account for Any Email
-    const newTester = {
-      id: "usr_" + Date.now(),
-      email: cleanEmail,
-      name: cleanEmail.split('@')[0],
-      role: 'staff',
-      avatar: '',
-      grantedAt: new Date().toISOString().split('T')[0]
-    };
-    this.users.push(newTester);
-    this.saveUsers(this.users);
-    this.saveSession(newTester);
-    this.closeLoginModal();
-    alert(`Welcome, ${newTester.name}! New tester account initialized with STAFF permissions.`);
-    this.renderAuthStatus();
-    location.reload();
-    return true;
+    // 3. Strict Rejection: Unregistered Accounts are completely blocked
+    alert(`Access Denied: "${cleanEmail}" is not registered as an authorized account.\n\nOnly registered admin and staff members can access ministry operations.\nPlease contact the administrator.`);
+    return false;
   }
 
   logout() {
@@ -160,16 +163,17 @@ class AuthRBACEngine {
     return this.currentUser && this.currentUser.role === 'admin';
   }
 
-  grantPermission(email, name, role = 'staff') {
-    const existing = this.users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
+  async grantPermission(email, name, role = 'staff') {
+    const cleanEmail = email.toLowerCase().trim();
+    const existing = this.users.find(u => u.email.toLowerCase() === cleanEmail);
     if (existing) {
       existing.role = role;
       if (name) existing.name = name;
     } else {
       this.users.push({
         id: "usr_" + Date.now(),
-        email: email.trim(),
-        name: name || email.split('@')[0],
+        email: cleanEmail,
+        name: name || cleanEmail.split('@')[0],
         role: role,
         avatar: "",
         grantedAt: new Date().toISOString().split('T')[0]
@@ -177,16 +181,42 @@ class AuthRBACEngine {
     }
     this.saveUsers(this.users);
     this.renderRbacTable();
+
+    // Sync to Supabase staff_users table if connected
+    if (window.supabaseClient && window.supabaseClient.isLive()) {
+      try {
+        await window.supabaseClient.client.from('staff_users').upsert({
+          id: 'usr_' + Date.now(),
+          email: cleanEmail,
+          name: name || cleanEmail.split('@')[0],
+          role: role
+        }, { onConflict: 'email' });
+        console.log('[Supabase] Whitelist updated in cloud DB:', cleanEmail);
+      } catch (err) {
+        console.warn('[Supabase] Failed to sync staff_users:', err);
+      }
+    }
   }
 
-  revokePermission(email) {
-    if (email === 'admin@treeoflifemissions.org') {
+  async revokePermission(email) {
+    const cleanEmail = email.toLowerCase().trim();
+    if (cleanEmail === 'admin@treeoflifemissions.org') {
       alert("Cannot revoke super administrator.");
       return;
     }
-    this.users = this.users.filter(u => u.email.toLowerCase() !== email.toLowerCase());
+    this.users = this.users.filter(u => u.email.toLowerCase() !== cleanEmail);
     this.saveUsers(this.users);
     this.renderRbacTable();
+
+    // Delete from Supabase staff_users table if connected
+    if (window.supabaseClient && window.supabaseClient.isLive()) {
+      try {
+        await window.supabaseClient.client.from('staff_users').delete().eq('email', cleanEmail);
+        console.log('[Supabase] Staff revoked in cloud DB:', cleanEmail);
+      } catch (err) {
+        console.warn('[Supabase] Failed to delete from staff_users:', err);
+      }
+    }
   }
 
   initUI() {

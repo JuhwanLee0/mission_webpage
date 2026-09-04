@@ -509,7 +509,12 @@
           <div class="lightbox-caption" id="lightboxCaption"></div>
           <div class="lightbox-meta" id="lightboxMeta"></div>
         </div>
-        <button class="btn btn-outline" id="closeLightboxBtn" style="padding: 6px 16px;">Close</button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn btn-outline btn-lightbox-delete" id="lightboxDeleteBtn" style="padding: 6px 14px; color: #C0392B; border-color: #C0392B; display: none;">
+            <i class="fa-regular fa-trash-can"></i> Delete
+          </button>
+          <button class="btn btn-outline" id="closeLightboxBtn" style="padding: 6px 16px;">Close</button>
+        </div>
       </div>
     </div>
   </div>

@@ -74,54 +74,61 @@ class SupabaseHybridClient {
   }
 
   /* ==========================================================================
-     1. Authentication API (Live Supabase Auth or Local Mock)
+     1. Authentication API (Strict Whitelist Access Control)
      ========================================================================== */
   async signIn(email, password = '') {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Live Supabase Auth
+    // 1. Live Supabase Database Whitelist Check
     if (this.isLive()) {
       try {
-        const { data, error } = await this.client.auth.signInWithPassword({
-          email: cleanEmail,
-          password: password || 'TreeOfLife2026!'
-        });
-        if (error) throw error;
-        const user = {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name || cleanEmail.split('@')[0],
-          role: data.user.user_metadata?.role || 'staff',
-          avatar: data.user.user_metadata?.avatar || '',
-          provider: 'supabase'
-        };
-        this.saveLocalSession(user);
-        return { success: true, user };
+        const { data: staffMember, error: staffErr } = await this.client
+          .from('staff_users')
+          .select('*')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (staffErr) {
+          console.warn('[Supabase] staff_users query note:', staffErr.message);
+        }
+
+        if (staffMember) {
+          const user = {
+            id: staffMember.id || ('usr_' + Date.now()),
+            email: staffMember.email,
+            name: staffMember.name || cleanEmail.split('@')[0],
+            role: staffMember.role || 'staff',
+            avatar: staffMember.avatar || '',
+            provider: 'supabase'
+          };
+          this.saveLocalSession(user);
+          return { success: true, user };
+        } else {
+          // Explicit rejection: not in Supabase staff whitelist
+          return {
+            success: false,
+            error: `Access Denied: "${cleanEmail}" is not in the authorized staff list.\n\nPlease ask an Administrator to register your email in the Admin Center.`
+          };
+        }
       } catch (cloudErr) {
-        console.warn('[Supabase] Cloud login notice, checking local user fallback:', cloudErr.message);
+        console.warn('[Supabase] Cloud whitelist check failed:', cloudErr.message);
       }
     }
 
-    // 2. Hybrid Local Session (Test Mode)
-    let role = 'staff';
-    let name = cleanEmail.split('@')[0];
-    name = name.charAt(0).toUpperCase() + name.slice(1);
+    // 2. Local Fallback Whitelist Check (Only allow pre-authorized team members)
+    const allowedUsers = (window.authRBAC && window.authRBAC.users) ? window.authRBAC.users : [];
+    const matched = allowedUsers.find(u => u.email.toLowerCase() === cleanEmail);
 
-    if (cleanEmail.includes('admin') || cleanEmail.includes('fayez') || cleanEmail.includes('director')) {
-      role = 'admin';
+    if (matched) {
+      this.saveLocalSession(matched);
+      return { success: true, user: matched };
     }
 
-    const testUser = {
-      id: 'usr_' + Date.now(),
-      email: cleanEmail,
-      name: name + ' (Tester)',
-      role: role,
-      avatar: '',
-      provider: 'local_hybrid'
+    // Strict Rejection: Unknown email
+    return {
+      success: false,
+      error: `Access Denied: "${cleanEmail}" is not registered as an authorized staff account.\n\nOnly pre-approved team members can access staff features.`
     };
-
-    this.saveLocalSession(testUser);
-    return { success: true, user: testUser };
   }
 
   async signOut() {
@@ -133,6 +140,42 @@ class SupabaseHybridClient {
       }
     }
     localStorage.setItem(this.authKey, 'logged_out');
+    return true;
+  }
+
+  /* ==========================================================================
+     3. Delete Photo API (Supabase Cloud + Local Storage Sync)
+     ========================================================================== */
+  async deletePhoto(photoId) {
+    if (!photoId) return false;
+
+    // 1. Live Supabase Cloud DB Delete
+    if (this.isLive()) {
+      try {
+        const { error } = await this.client
+          .from('photos')
+          .delete()
+          .eq('id', photoId);
+
+        if (error) {
+          console.warn('[Supabase] DB photo delete error:', error.message);
+        } else {
+          console.log('[Supabase] Cloud photo record deleted:', photoId);
+        }
+      } catch (cloudErr) {
+        console.warn('[Supabase] Cloud photo delete failed:', cloudErr.message);
+      }
+    }
+
+    // 2. Local Storage Cache Cleanup
+    try {
+      const existing = this.getLocalPhotos();
+      const updated = existing.filter(p => p.id !== photoId);
+      localStorage.setItem(this.storageKey, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('[Supabase] Local storage delete cache note:', e);
+    }
+
     return true;
   }
 

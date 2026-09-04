@@ -304,6 +304,8 @@ class PhotoGalleryEngine {
       return;
     }
 
+    const isStaff = window.authRBAC && window.authRBAC.hasUploadPermission();
+
     this.grid.innerHTML = filtered.map((item, idx) => {
       const isPriority = idx < 6;
       const thumbUrl = this.getThumbnailUrl(item.imageUrl);
@@ -317,6 +319,11 @@ class PhotoGalleryEngine {
                  decoding="async"
                  onload="this.classList.add('is-loaded')" />
             <span class="gallery-card-tag">#${item.tag.toUpperCase()}</span>
+            ${isStaff ? `
+              <button type="button" class="gallery-card-delete-btn" data-id="${item.id}" title="Delete Photo" aria-label="Delete Photo">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            ` : ''}
           </div>
           <div class="gallery-card-body">
             <p class="gallery-card-caption">${item.caption}</p>
@@ -338,10 +345,22 @@ class PhotoGalleryEngine {
 
     // Bind card click to lightbox
     this.grid.querySelectorAll('.gallery-card').forEach(card => {
-      card.addEventListener('click', () => {
+      card.addEventListener('click', (e) => {
+        // If clicking delete button, don't open lightbox
+        if (e.target.closest('.gallery-card-delete-btn')) return;
         const id = card.dataset.id;
         const photo = this.photos.find(p => p.id === id);
         if (photo) this.openLightbox(photo);
+      });
+    });
+
+    // Bind delete buttons on cards
+    this.grid.querySelectorAll('.gallery-card-delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        this.deletePhoto(id);
       });
     });
 
@@ -352,12 +371,54 @@ class PhotoGalleryEngine {
 
   openLightbox(photo) {
     if (!this.lightbox) return;
+    this.currentLightboxPhoto = photo;
     this.lightboxImg.src = photo.imageUrl;
     this.lightboxImg.className = photo.filter || 'filter-normal';
     this.lightboxCaption.textContent = photo.caption;
     this.lightboxMeta.textContent = `${photo.location || 'Bryan, TX'} • Uploaded by ${photo.author || 'Staff'} • ${photo.date || 'Recent'}`;
+
+    const isStaff = window.authRBAC && window.authRBAC.hasUploadPermission();
+    const lightboxDeleteBtn = document.getElementById('lightboxDeleteBtn');
+    if (lightboxDeleteBtn) {
+      lightboxDeleteBtn.style.display = isStaff ? 'inline-flex' : 'none';
+      lightboxDeleteBtn.onclick = () => {
+        if (this.currentLightboxPhoto) {
+          this.deletePhoto(this.currentLightboxPhoto.id);
+        }
+      };
+    }
+
     this.lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+  }
+
+  async deletePhoto(photoId) {
+    if (!window.authRBAC || !window.authRBAC.hasUploadPermission()) {
+      alert("Permission Denied: Only authorized staff and administrators can delete photos.");
+      return;
+    }
+
+    const photo = this.photos.find(p => p.id === photoId);
+    const captionPreview = photo && photo.caption ? `"${photo.caption.slice(0, 35)}..."` : "this photo";
+
+    if (!confirm(`Are you sure you want to delete ${captionPreview}?\n\nThis will remove it from the photo gallery and cloud database.`)) {
+      return;
+    }
+
+    try {
+      if (window.supabaseClient) {
+        await window.supabaseClient.deletePhoto(photoId);
+      }
+
+      this.photos = this.photos.filter(p => p.id !== photoId);
+      this.savePhotos(this.photos);
+      this.closeLightbox();
+      this.render();
+      alert("Photo successfully deleted.");
+    } catch (err) {
+      console.error("Delete photo error:", err);
+      alert("Failed to delete photo: " + err.message);
+    }
   }
 
   closeLightbox() {

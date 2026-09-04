@@ -282,8 +282,18 @@ class AnnouncementsEngine {
     }
   }
 
-  deleteNotice(id) {
+  async deleteNotice(id) {
     if (!confirm("Are you sure you want to remove this announcement bulletin?")) return;
+
+    if (window.supabaseClient && window.supabaseClient.isLive()) {
+      try {
+        await window.supabaseClient.client.from('announcements').delete().eq('id', id);
+        console.log('[Supabase] Announcement deleted from cloud DB:', id);
+      } catch (err) {
+        console.warn('[Supabase] Announcement delete error:', err);
+      }
+    }
+
     this.announcements = this.announcements.filter(n => n.id !== id);
     this.saveAnnouncements();
     this.renderList();
