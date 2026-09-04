@@ -294,19 +294,6 @@ class AuthRBACEngine {
                 <i class="fa-solid fa-right-to-bracket"></i> Sign In
               </button>
             </form>
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--color-sand-border); text-align: center;">
-              <div style="font-size: 0.74rem; font-weight: 800; color: var(--color-amber); text-transform: uppercase; margin-bottom: 8px;">
-                Quick Demo Accounts (1-Click)
-              </div>
-              <div style="display: flex; gap: 8px; justify-content: center;">
-                <button type="button" class="btn btn-outline" id="demoLoginAdmin" style="font-size: 0.76rem; padding: 5px 10px;">
-                  Admin (Mike)
-                </button>
-                <button type="button" class="btn btn-outline" id="demoLoginStaff" style="font-size: 0.76rem; padding: 5px 10px;">
-                  Staff (Media)
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       `;
@@ -406,18 +393,6 @@ class AuthRBACEngine {
         const email = document.getElementById('staffLoginEmail').value;
         this.login(email);
       });
-    }
-
-    const demoAdmin = document.getElementById('demoLoginAdmin');
-    if (demoAdmin && !demoAdmin._bound) {
-      demoAdmin._bound = true;
-      demoAdmin.addEventListener('click', () => this.login('admin@treeoflifemissions.org'));
-    }
-
-    const demoStaff = document.getElementById('demoLoginStaff');
-    if (demoStaff && !demoStaff._bound) {
-      demoStaff._bound = true;
-      demoStaff.addEventListener('click', () => this.login('media@treeoflifemissions.org'));
     }
   }
 
